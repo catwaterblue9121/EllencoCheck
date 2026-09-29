@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # EllencoCheck + Supabase
 
 O projeto foi migrado de **Flask + MySQL/XAMPP** para **Supabase**.
@@ -120,3 +121,6 @@ A criação de contas pelo formulário público usa `auth.signUp()`. A criação
 Cada inspeção cria um registro em `checklists` e depois seus registros correspondentes em `respostas_checklist`.
 
 Se a gravação das respostas falhar, o frontend tenta remover o checklist criado para evitar registros incompletos.
+=======
+# EllencoCheck
+>>>>>>> b8ce4f52c1da669dcb14809d9dd3e21a3311b284
