@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./supabase-config.js"></script>
+    <title>FrotaCheck - Autenticação</title>
+</head>
+
+<body
+    class="bg-slate-100 min-h-screen text-slate-900 font-sans antialiased selection:bg-[#EE3237] selection:text-white flex items-center justify-center p-4">
+
+    <div
+        class="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden transition-all relative">
+
+        <div class="h-2 w-full bg-[#EE3237]"></div>
+
+        <div class="p-8 pb-6 border-b border-slate-100 text-center">
+
+            <div
+                class="w-12 h-12 rounded-xl bg-[#113A6E] flex items-center justify-center shadow-lg shadow-[#113A6E]/20 ring-1 ring-black/5 mx-auto mb-3">
+                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 110-4 2 2 0 010 4zm0-10a2 2 0 100-4 2 2 0 000 4zm6 10V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 110-4 2 2 0 010 4zm0-10a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+            </div>
+
+            <h1 class="text-3xl font-extrabold italic tracking-tight text-[#113A6E]">
+                Ellenco<span class="text-[#EE3237]">Check</span>
+            </h1>
+            <p id="authSubtitle" class="text-xs font-medium text-slate-500 mt-1">
+                Acesse sua conta para continuar
+            </p>
+        </div>
+
+        <div id="message" class="hidden mx-8 mt-6 rounded-xl p-4 text-xs font-semibold border transition-all"></div>
+
+        <form id="formLogin" onsubmit="handleLogin(event)" class="p-8 space-y-4">
+            <div>
+                <label for="loginEmail" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">
+                    E-mail
+                </label>
+                <input type="email" id="loginEmail" required placeholder="seu@email.com" oninput="ocultarMensagem()"
+                    class="w-full h-12 px-4 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm outline-none transition focus:bg-white focus:border-[#113A6E] focus:ring-4 focus:ring-[#113A6E]/10">
+            </div>
+
+            <div>
+                <label for="loginSenha" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">
+                    Senha
+                </label>
+                <input type="password" id="loginSenha" required placeholder="••••••••" oninput="ocultarMensagem()"
+                    class="w-full h-12 px-4 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm outline-none transition focus:bg-white focus:border-[#113A6E] focus:ring-4 focus:ring-[#113A6E]/10">
+            </div>
+
+            <button type="submit" id="btnLogin"
+                class="w-full h-12 bg-[#113A6E] hover:bg-[#0d2e58] active:scale-[0.99] text-white rounded-xl font-bold shadow-lg shadow-[#113A6E]/20 transition-all duration-200 flex items-center justify-center cursor-pointer mt-2 disabled:cursor-not-allowed">
+                <span>Entrar no Sistema</span>
+            </button>
+
+            <p class="text-center text-xs text-slate-500 mt-4">
+                Ainda não tem acesso?
+                <button type="button" onclick="alternarAba('cadastro')"
+                    class="text-[#EE3237] font-bold hover:underline cursor-pointer">
+                    Criar conta
+                </button>
+            </p>
+                    <p class="text-center text-xs text-slate-500 mt-3">
+                <a href="./forgot-password.html" class="text-[#113A6E] font-bold hover:underline">Esqueci minha senha</a>
+            </p>
+
+</form>
+
+        <form id="formCadastro" onsubmit="handleCadastro(event)" class="hidden p-8 space-y-4">
+            <div>
+                <label for="cadNome" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">
+                    Nome Completo
+                </label>
+                <input type="text" id="cadNome" required placeholder="João Silva" oninput="ocultarMensagem()"
+                    class="w-full h-12 px-4 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm outline-none transition focus:bg-white focus:border-[#113A6E] focus:ring-4 focus:ring-[#113A6E]/10">
+            </div>
+
+            <div>
+                <label for="cadEmail" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">
+                    E-mail
+                </label>
+                <input type="email" id="cadEmail" required placeholder="seu@email.com" oninput="ocultarMensagem()"
+                    class="w-full h-12 px-4 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm outline-none transition focus:bg-white focus:border-[#113A6E] focus:ring-4 focus:ring-[#113A6E]/10">
+            </div>
+
+            <div>
+                <label for="cadSenha" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">
+                    Senha
+                </label>
+                <input type="password" id="cadSenha" required minlength="6" placeholder="Mínimo 6 caracteres"
+                    oninput="ocultarMensagem()"
+                    class="w-full h-12 px-4 bg-slate-50 border border-slate-300 rounded-xl text-slate-800 text-sm outline-none transition focus:bg-white focus:border-[#113A6E] focus:ring-4 focus:ring-[#113A6E]/10">
+            </div>
+
+            <button type="submit" id="btnCadastro"
+                class="w-full h-12 bg-[#113A6E] hover:bg-[#0d2e58] active:scale-[0.99] text-white rounded-xl font-bold shadow-lg shadow-[#113A6E]/20 transition-all duration-200 flex items-center justify-center cursor-pointer mt-2 disabled:cursor-not-allowed">
+                <span>Criar Minha Conta</span>
+            </button>
+
+            <p class="text-center text-xs text-slate-500 mt-4">
+                Já tem uma conta?
+                <button type="button" onclick="alternarAba('login')"
+                    class="text-[#EE3237] font-bold hover:underline cursor-pointer">
+                    Fazer Login
+                </button>
+            </p>
+        </form>
+
+    </div>
+
+    
+<script>
+const sb = window.ellencoSupabase;
+const formLogin = document.getElementById("formLogin");
+const formCadastro = document.getElementById("formCadastro");
+const authSubtitle = document.getElementById("authSubtitle");
+const message = document.getElementById("message");
+
+function alternarAba(aba) {
+    ocultarMensagem();
+    if (aba === 'cadastro') {
+        formLogin.classList.add("hidden");
+        formCadastro.classList.remove("hidden");
+        authSubtitle.textContent = "Preencha os dados para se cadastrar";
+    } else {
+        formCadastro.classList.add("hidden");
+        formLogin.classList.remove("hidden");
+        authSubtitle.textContent = "Acesse sua conta para continuar";
+    }
+}
+function mostrarMensagem(texto, tipo) {
+    message.textContent = texto;
+    message.className = "mx-8 mt-6 rounded-xl p-4 text-xs font-semibold border block transition-all";
+    message.classList.add(tipo === "erro" ? "bg-red-50":"bg-emerald-50",
+        tipo === "erro" ? "border-red-200":"border-emerald-200",
+        tipo === "erro" ? "text-red-700":"text-emerald-700");
+}
+function ocultarMensagem() { message.classList.add("hidden"); }
+
+async function handleLogin(e) {
+    e.preventDefault(); ocultarMensagem();
+    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const senha = document.getElementById("loginSenha").value;
+    const btn = document.getElementById("btnLogin");
+    try {
+        btn.disabled=true; btn.classList.add("opacity-50");
+        btn.querySelector("span").textContent="Autenticando...";
+        const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
+        if (error) throw error;
+        const { data: profile, error: profileError } = await sb.from("profiles")
+            .select("id,nome,email,ativo,role,criado_em").eq("id", data.user.id).single();
+        if (profileError || !profile) throw new Error("Não foi possível carregar o perfil.");
+        if (!profile.ativo) {
+            await sb.auth.signOut();
+            throw new Error("Esta conta está desativada. Procure um administrador.");
+        }
+        localStorage.setItem("usuario", JSON.stringify(profile));
+        mostrarMensagem("Login realizado com sucesso! Redirecionando...", "sucesso");
+        setTimeout(()=>window.location.href="./index.html",500);
+    } catch(err) {
+        mostrarMensagem(err.message || "E-mail ou senha incorretos.", "erro");
+    } finally {
+        btn.disabled=false; btn.classList.remove("opacity-50");
+        btn.querySelector("span").textContent="Entrar no Sistema";
+    }
+}
+
+async function handleCadastro(e) {
+    e.preventDefault(); ocultarMensagem();
+    const nome=document.getElementById("cadNome").value.trim();
+    const email=document.getElementById("cadEmail").value.trim().toLowerCase();
+    const senha=document.getElementById("cadSenha").value;
+    const btn=document.getElementById("btnCadastro");
+    try {
+        btn.disabled=true; btn.classList.add("opacity-50");
+        btn.querySelector("span").textContent="Cadastrando...";
+        const { data, error } = await sb.auth.signUp({
+            email, password:senha, options:{ data:{ nome }, emailRedirectTo:location.href }
+        });
+        if (error) throw error;
+        if (!data.session) {
+            mostrarMensagem("Conta criada. Verifique seu e-mail para confirmar a conta antes de entrar.", "sucesso");
+            formCadastro.reset();
+            return;
+        }
+        const { data: profile } = await sb.from("profiles")
+            .select("id,nome,email,ativo,role,criado_em").eq("id", data.user.id).single();
+        if (profile) localStorage.setItem("usuario", JSON.stringify(profile));
+        mostrarMensagem("Conta criada com sucesso! Redirecionando...", "sucesso");
+        formCadastro.reset();
+        setTimeout(()=>location.href="./index.html",700);
+    } catch(err) {
+        mostrarMensagem(err.message || "Não foi possível completar o cadastro.", "erro");
+    } finally {
+        btn.disabled=false; btn.classList.remove("opacity-50");
+        btn.querySelector("span").textContent="Criar Minha Conta";
+    }
+}
+</script>
+
+</body>
+
+</html>

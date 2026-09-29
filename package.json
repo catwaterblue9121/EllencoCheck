@@ -1,0 +1,14 @@
+{
+  "name": "ellencocheck",
+  "version": "2.0.0",
+  "private": true,
+  "description": "EllencoCheck com Supabase",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "serve": "^14.2.4"
+  }
+}
