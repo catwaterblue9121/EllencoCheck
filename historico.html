@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="./ellenco-theme.js"></script>
+    <script src="./ellenco-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Inspeções | EllencoCheck</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="./pdf-checklist.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "ellenco-blue": "#113A6E",
+                        "ellenco-blue-dark": "#0D2E58",
+                        "ellenco-red": "#EE3237",
+                        "ellenco-red-hover": "#C9252A"
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="stylesheet" href="./ellenco-theme.css">
+</head>
+
+<body class="bg-slate-50 min-h-screen text-slate-900 font-sans antialiased selection:bg-ellenco-blue selection:text-white">
+
+    <!-- HEADER -->
+    <header class="bg-white/95 backdrop-blur-md border-b-2 border-ellenco-blue/10 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-3">
+
+                <a href="./index.html" class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-ellenco-blue flex items-center justify-center shadow-md shadow-ellenco-blue/20 ring-1 ring-black/5 shrink-0">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 17V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 110-4 2 2 0 010 4zm0-10a2 2 0 100-4 2 2 0 000 4zm6 10V7m0 10a2 2 0 100 4 2 2 0 000-4zm0 0a2 2 0 110-4 2 2 0 010 4zm0-10a2 2 0 100-4 2 2 0 000 4z" />
+                        </svg>
+                    </div>
+                    <div class="min-w-0">
+                        <h1 class="text-lg min-[400px]:text-xl sm:text-2xl font-black tracking-tight text-ellenco-blue italic">
+                            Ellenco<span class="text-ellenco-red">Check</span>
+                        </h1>
+                        <p class="hidden sm:block text-xs font-semibold text-slate-400 uppercase tracking-wider">Gestão de Inspeções</p>
+                    </div>
+                </a>
+
+                <nav class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <a href="./index.html"
+                        class="h-10 px-3 sm:px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-ellenco-blue hover:bg-slate-50 inline-flex items-center transition">
+                        <span class="hidden sm:inline">Nova inspeção</span>
+                        <span class="sm:hidden">Nova</span>
+                    </a>
+                    <a id="navUsuarios" href="./usuarios.html"
+                        class="hidden h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-ellenco-blue hover:bg-slate-50 md:inline-flex items-center transition">
+                        Usuários
+                    </a>
+                    <button type="button" onclick="alternarTema()" title="Alternar tema"
+                        class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-600 dark:text-slate-300 flex items-center justify-center transition">
+                        <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                        </svg>
+                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 16a4 4 0 100-8 4 4 0 000 8z" />
+                        </svg>
+                    </button>
+                    <button type="button" onclick="sair()"
+                        class="h-10 px-2 sm:px-4 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition">
+                        Sair
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
+
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-ellenco-blue italic uppercase">Histórico de Inspeções</h2>
+                <p id="subtitulo" class="text-slate-500 mt-1.5 text-sm sm:text-base">
+                    Consulte as inspeções realizadas e baixe o relatório em PDF.
+                </p>
+            </div>
+        </div>
+
+        <!-- FILTROS -->
+        <section class="bg-white dark:bg-slate-900 rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mb-6">
+            <div class="p-4 sm:p-5 grid grid-cols-2 md:grid-cols-12 gap-3 sm:gap-4 items-end">
+                <div class="col-span-2 md:col-span-5">
+                    <label for="fBusca" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">Buscar</label>
+                    <input id="fBusca" type="search" autocomplete="off" placeholder="Equipamento, placa, prefixo, inspetor ou nº"
+                        class="w-full h-11 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
+                </div>
+                <div class="col-span-2 md:col-span-3">
+                    <label for="fStatus" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">Resultado</label>
+                    <select id="fStatus"
+                        class="w-full h-11 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
+                        <option value="">Todos</option>
+                        <option value="APROVADO">Aprovado</option>
+                        <option value="APROVADO_COM_OBSERVACAO">Aprovado com observação</option>
+                        <option value="REPROVADO">Reprovado</option>
+                    </select>
+                </div>
+                <div class="col-span-1 md:col-span-2">
+                    <label for="fDe" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">De</label>
+                    <input id="fDe" type="date"
+                        class="w-full h-11 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
+                </div>
+                <div class="col-span-1 md:col-span-2">
+                    <label for="fAte" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">Até</label>
+                    <input id="fAte" type="date"
+                        class="w-full h-11 px-3 bg-slate-50 border border-slate-200 rounded-xl text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
+                </div>
+            </div>
+            <div class="px-5 pb-4 flex items-center justify-between gap-3">
+                <p id="contagem" class="text-xs text-slate-400"></p>
+                <button type="button" onclick="limparFiltros()" class="text-xs font-bold text-ellenco-blue hover:underline">Limpar filtros</button>
+            </div>
+        </section>
+
+        <div id="mensagem" class="hidden mb-6 rounded-xl p-4 text-sm font-semibold border"></div>
+
+        <!-- LISTA -->
+        <div id="lista" class="space-y-3"></div>
+
+        <div class="mt-6 text-center">
+            <button id="btnMais" type="button" onclick="carregar(false)"
+                class="hidden h-11 px-6 rounded-xl border-2 border-ellenco-blue text-ellenco-blue font-bold text-sm hover:bg-slate-50 transition disabled:opacity-60">
+                Carregar mais
+            </button>
+        </div>
+    </main>
+
+    <script>
+        const sb = window.ellencoSupabase;
+        const TAMANHO_PAGINA = 30;
+
+        let perfil = null;
+        let registros = [];       // tudo que já foi carregado do servidor (com os filtros de servidor)
+        let proximaPagina = 0;
+        let acabou = false;
+        let carregandoLista = false;
+        let versaoBusca = 0;       // descarta respostas de buscas antigas
+
+        const STATUS_VISUAL = {
+            APROVADO: { rotulo: "Aprovado", classes: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+            APROVADO_COM_OBSERVACAO: { rotulo: "Aprovado com observação", classes: "bg-amber-50 text-amber-700 border-amber-100" },
+            REPROVADO: { rotulo: "Reprovado", classes: "bg-red-50 text-red-700 border-red-200" }
+        };
+
+        /* ---------- util ---------- */
+        function escapeHtml(v) {
+            return String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+        function normalizar(v) {
+            return String(v ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+        }
+        function fmtDataHora(iso) {
+            return new Date(iso).toLocaleString("pt-BR", {
+                timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"
+            });
+        }
+        function fmtHorimetro(n) {
+            const v = Number(n);
+            return Number.isFinite(v) ? v.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 2 }) + " h" : "—";
+        }
+        function mostrarMensagem(texto, erro = true) {
+            const el = document.getElementById("mensagem");
+            el.textContent = texto;
+            el.className = "mb-6 rounded-xl p-4 text-sm font-semibold border " + (erro
+                ? "bg-red-50 border-red-200 text-red-700"
+                : "bg-emerald-50 border-emerald-200 text-emerald-700");
+        }
+        function esconderMensagem() { document.getElementById("mensagem").className = "hidden"; }
+
+        /* ---------- sessão ---------- */
+        async function exigirSessao() {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) { location.replace("./login.html"); return null; }
+
+            const { data: p, error } = await sb.from("profiles")
+                .select("id,nome,email,ativo,role").eq("id", user.id).single();
+            if (error || !p || !p.ativo) {
+                await sb.auth.signOut();
+                location.replace("./login.html");
+                return null;
+            }
+            return p;
+        }
+
+        async function sair() {
+            await sb.auth.signOut();
+            localStorage.removeItem("usuario");
+            location.replace("./login.html");
+        }
+
+        /* ---------- dados ---------- */
+        function filtrosServidor() {
+            return {
+                status: document.getElementById("fStatus").value,
+                de: document.getElementById("fDe").value,
+                ate: document.getElementById("fAte").value
+            };
+        }
+
+        async function carregar(reiniciar) {
+            if (carregandoLista && !reiniciar) return;   // "carregar mais" repetido é ignorado; novo filtro sempre vale
+            carregandoLista = true;
+            const versao = ++versaoBusca;
+
+            if (reiniciar) {
+                registros = [];
+                proximaPagina = 0;
+                acabou = false;
+                document.getElementById("lista").innerHTML = `
+                    <div class="py-16 text-center text-slate-400">
+                        <div class="w-8 h-8 border-2 border-slate-300 border-t-ellenco-blue rounded-full animate-spin mx-auto mb-4"></div>
+                        <p class="text-sm font-medium">Carregando inspeções...</p>
+                    </div>`;
+            }
+            esconderMensagem();
+
+            const btn = document.getElementById("btnMais");
+            btn.disabled = true;
+
+            try {
+                const f = filtrosServidor();
+                const de = proximaPagina * TAMANHO_PAGINA;
+
+                let q = sb.from("checklists")
+                    .select("id, realizado_em, status, horimetro, equipamentos ( nome, placa, patrimonio, prefixo ), profiles ( nome ), respostas_checklist ( status )")
+                    .order("realizado_em", { ascending: false })
+                    .order("id", { ascending: false })
+                    .range(de, de + TAMANHO_PAGINA - 1);
+
+                if (f.status) q = q.eq("status", f.status);
+                if (f.de) q = q.gte("realizado_em", new Date(`${f.de}T00:00:00-03:00`).toISOString());
+                if (f.ate) q = q.lte("realizado_em", new Date(`${f.ate}T23:59:59.999-03:00`).toISOString());
+
+                const { data, error } = await q;
+                if (versao !== versaoBusca) return;
+                if (error) throw error;
+
+                registros = registros.concat(data || []);
+                proximaPagina++;
+                if (!data || data.length < TAMANHO_PAGINA) acabou = true;
+
+                renderizar();
+            } catch (e) {
+                if (versao !== versaoBusca) return;
+                console.error("Erro ao carregar histórico:", e);
+                document.getElementById("lista").innerHTML = "";
+                mostrarMensagem(`Não foi possível carregar o histórico: ${e.message || e}`);
+            } finally {
+                if (versao === versaoBusca) {
+                    carregandoLista = false;
+                    btn.disabled = false;
+                    btn.classList.toggle("hidden", acabou);
+                }
+            }
+        }
+
+        function aplicarBuscaLocal(lista) {
+            const termo = normalizar(document.getElementById("fBusca").value);
+            if (!termo) return lista;
+            return lista.filter(r => {
+                const campos = [
+                    r.id, String(r.id).padStart(4, "0"),
+                    r.equipamentos?.nome, r.equipamentos?.placa, r.equipamentos?.patrimonio, r.equipamentos?.prefixo,
+                    r.profiles?.nome
+                ];
+                return campos.some(c => normalizar(c).includes(termo));
+            });
+        }
+
+        function renderizar() {
+            const lista = document.getElementById("lista");
+            const visiveis = aplicarBuscaLocal(registros);
+
+            document.getElementById("contagem").textContent =
+                `${visiveis.length} de ${registros.length} inspeção(ões) carregada(s)` + (acabou ? "" : " — há mais registros");
+
+            if (!visiveis.length) {
+                lista.innerHTML = `
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl py-14 text-center">
+                        <p class="font-bold text-slate-600">Nenhuma inspeção encontrada.</p>
+                        <p class="text-xs text-slate-400 mt-1">${acabou
+                            ? "Ajuste os filtros ou faça uma nova inspeção."
+                            : "Nenhum resultado entre as carregadas. Use “Carregar mais” para buscar em registros anteriores."}</p>
+                    </div>`;
+                return;
+            }
+
+            lista.innerHTML = "";
+            visiveis.forEach(r => lista.appendChild(criarCartao(r)));
+        }
+
+        function criarCartao(r) {
+            const st = STATUS_VISUAL[r.status] || { rotulo: r.status, classes: "bg-slate-50 text-slate-600 border-slate-200" };
+            const respostas = r.respostas_checklist || [];
+            const problemas = respostas.filter(x => x.status === "PROBLEMA").length;
+            const eq = r.equipamentos || {};
+            const nomeEq = eq.nome || "Equipamento não disponível";
+
+            const card = document.createElement("article");
+            card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center gap-4 hover:border-ellenco-blue/40 transition";
+            card.dataset.id = r.id;
+
+            card.innerHTML = `
+                <div class="flex items-start gap-4 min-w-0 flex-1">
+                    <div class="w-12 h-12 rounded-xl bg-ellenco-blue text-white flex items-center justify-center font-black italic shrink-0">
+                        ${escapeHtml(String(r.id).padStart(4, "0"))}
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <h3 class="font-black text-ellenco-blue italic uppercase truncate max-w-full">${escapeHtml(nomeEq)}</h3>
+                            ${eq.placa ? `<span class="text-ellenco-red font-black text-sm">(${escapeHtml(eq.placa)})</span>` : ""}
+                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full border ${st.classes}">${escapeHtml(st.rotulo)}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 mt-1.5 text-xs text-slate-500">
+                            <span>${escapeHtml(fmtDataHora(r.realizado_em))}</span>
+                            <span>Inspetor: <strong class="text-slate-700">${escapeHtml(r.profiles?.nome || "—")}</strong></span>
+                            <span>Horímetro: ${escapeHtml(fmtHorimetro(r.horimetro))}</span>
+                            ${eq.prefixo ? `<span>Prefixo: ${escapeHtml(eq.prefixo)}</span>` : ""}
+                            ${eq.patrimonio ? `<span>Patrimônio: ${escapeHtml(eq.patrimonio)}</span>` : ""}
+                            <span>${respostas.length} itens${problemas ? ` · <strong class="text-ellenco-red">${problemas} problema(s)</strong>` : ""}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 lg:flex lg:items-center lg:shrink-0">
+                    <button type="button" data-acao="abrir"
+                        class="h-11 px-4 rounded-xl border-2 border-ellenco-blue text-ellenco-blue text-sm font-bold hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-wait">
+                        Visualizar
+                    </button>
+                    <button type="button" data-acao="baixar"
+                        class="h-11 px-5 rounded-xl bg-ellenco-red hover:bg-ellenco-red-hover text-white text-sm font-bold transition disabled:opacity-60 disabled:cursor-wait flex items-center gap-2">
+                        <span>Baixar PDF</span>
+                    </button>
+                </div>`;
+
+            card.querySelectorAll("button[data-acao]").forEach(b =>
+                b.addEventListener("click", () => gerarPdf(r.id, b.dataset.acao, card)));
+            return card;
+        }
+
+        async function gerarPdf(id, acao, card) {
+            const botoes = card.querySelectorAll("button[data-acao]");
+            const rotulos = [...botoes].map(b => b.innerHTML);
+            try {
+                if (!window.EllencoPDF || !window.jspdf) {
+                    throw new Error("as bibliotecas de PDF não carregaram. Verifique a conexão com a internet.");
+                }
+                botoes.forEach(b => { b.disabled = true; });
+                card.querySelector('button[data-acao="baixar"]').innerHTML = "<span>Gerando...</span>";
+                esconderMensagem();
+                await EllencoPDF.gerar(sb, id, { acao, geradoPor: perfil?.nome });
+            } catch (e) {
+                console.error("Erro ao gerar PDF:", e);
+                mostrarMensagem(`Não foi possível gerar o PDF da inspeção ${String(id).padStart(4, "0")}: ${e.message || e}`);
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            } finally {
+                botoes.forEach((b, i) => { b.disabled = false; b.innerHTML = rotulos[i]; });
+            }
+        }
+
+        /* ---------- filtros ---------- */
+        function limparFiltros() {
+            ["fBusca", "fStatus", "fDe", "fAte"].forEach(id => { document.getElementById(id).value = ""; });
+            carregar(true);
+        }
+
+        let temporizador = null;
+        document.getElementById("fBusca").addEventListener("input", () => {
+            clearTimeout(temporizador);
+            temporizador = setTimeout(renderizar, 150);
+        });
+        ["fStatus", "fDe", "fAte"].forEach(id =>
+            document.getElementById(id).addEventListener("change", () => carregar(true)));
+
+        /* ---------- início ---------- */
+        document.addEventListener("DOMContentLoaded", async () => {
+            perfil = await exigirSessao();
+            if (!perfil) return;
+            window.ellencoLiberarPagina && window.ellencoLiberarPagina();
+
+            if (perfil.role === "admin") {
+                document.getElementById("navUsuarios").classList.remove("hidden");
+                document.getElementById("subtitulo").textContent =
+                    "Você é administrador: vê as inspeções de todos os usuários. Baixe o relatório em PDF de cada uma.";
+            } else {
+                document.getElementById("subtitulo").textContent =
+                    "Suas inspeções realizadas. Baixe o relatório em PDF de cada uma.";
+            }
+            carregar(true);
+        });
+    </script>
+</body>
+
+</html>

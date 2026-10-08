@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <script src="./ellenco-theme.js"></script>
+    <script src="./ellenco-guard.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Nova Inspeção | EllencoCheck</title>
@@ -10,6 +12,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="./pdf-checklist.js"></script>
 
     <script>
         tailwind.config = {
@@ -17,232 +22,17 @@
             theme: {
                 extend: {
                     colors: {
-                        "ellenco-blue": "#123B67",
-                        "ellenco-blue-dark": "#0D2C4D",
-                        "ellenco-red": "#D62828",
-                        "ellenco-red-hover": "#B91C1C"
+                        "ellenco-blue": "#113A6E",
+                        "ellenco-blue-dark": "#0D2E58",
+                        "ellenco-red": "#EE3237",
+                        "ellenco-red-hover": "#C9252A"
                     }
                 }
             }
         };
     </script>
 
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            margin: 0;
-        }
-
-        button,
-        select,
-        input,
-        textarea {
-            font-family: inherit;
-        }
-
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #e2e8f0;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #64748b;
-            border-radius: 999px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-
-        .dark ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-
-        .dark ::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-
-        /* =====================================================
-           DARK MODE
-        ===================================================== */
-
-        .dark body {
-            background: #020617;
-            color: #f1f5f9;
-        }
-
-        .dark input,
-        .dark textarea,
-        .dark select {
-            color-scheme: dark;
-        }
-
-        .dark .bg-white {
-            background-color: #0f172a !important;
-        }
-
-        .dark .bg-white\/95 {
-            background-color: rgb(15 23 42 / 0.95) !important;
-        }
-
-        .dark .bg-slate-50 {
-            background-color: #1e293b !important;
-        }
-
-        .dark .bg-slate-50\/50 {
-            background-color: rgb(30 41 59 / 0.5) !important;
-        }
-
-        .dark .bg-slate-50\/60 {
-            background-color: rgb(30 41 59 / 0.6) !important;
-        }
-
-        .dark .bg-slate-200 {
-            background-color: #334155 !important;
-        }
-
-        .dark .border-slate-100 {
-            border-color: #334155 !important;
-        }
-
-        .dark .border-slate-200 {
-            border-color: #334155 !important;
-        }
-
-        .dark .border-slate-300 {
-            border-color: #475569 !important;
-        }
-
-        .dark .text-slate-900 {
-            color: #f8fafc !important;
-        }
-
-        .dark .text-slate-800 {
-            color: #f1f5f9 !important;
-        }
-
-        .dark .text-slate-700 {
-            color: #e2e8f0 !important;
-        }
-
-        .dark .text-slate-600 {
-            color: #cbd5e1 !important;
-        }
-
-        .dark .text-slate-500 {
-            color: #94a3b8 !important;
-        }
-
-        .dark .text-slate-400 {
-            color: #94a3b8 !important;
-        }
-
-        .dark .text-slate-300 {
-            color: #cbd5e1 !important;
-        }
-
-        .dark input,
-        .dark textarea {
-            background-color: #1e293b !important;
-            border-color: #475569 !important;
-            color: #f1f5f9 !important;
-        }
-
-        .dark input::placeholder,
-        .dark textarea::placeholder {
-            color: #64748b !important;
-        }
-
-        .dark #equipamentoResultados {
-            background-color: #0f172a !important;
-            border-color: #334155 !important;
-        }
-
-        .dark #equipamentoResultados button {
-            border-color: #334155 !important;
-        }
-
-        .dark #equipamentoResultados button:hover {
-            background-color: #1e293b !important;
-        }
-
-        .dark .hover\:bg-slate-50:hover {
-            background-color: #1e293b !important;
-        }
-
-        .dark .hover\:bg-slate-100:hover {
-            background-color: #334155 !important;
-        }
-
-        .dark .bg-emerald-50 {
-            background-color: rgb(6 78 59 / 0.35) !important;
-        }
-
-        .dark .border-emerald-200 {
-            border-color: #047857 !important;
-        }
-
-        .dark .bg-red-50 {
-            background-color: rgb(127 29 29 / 0.25) !important;
-        }
-
-        .dark .bg-red-50\/40 {
-            background-color: rgb(127 29 29 / 0.2) !important;
-        }
-
-        .dark .bg-red-50\/50 {
-            background-color: rgb(127 29 29 / 0.25) !important;
-        }
-
-        .dark .border-red-200 {
-            border-color: #991b1b !important;
-        }
-
-        .dark .border-red-300 {
-            border-color: #b91c1c !important;
-        }
-
-        .dark .bg-amber-50 {
-            background-color: rgb(120 53 15 / 0.3) !important;
-        }
-
-        .dark .border-amber-100 {
-            border-color: #92400e !important;
-        }
-
-        .dark #perfilModal .bg-slate-50 {
-            background-color: #1e293b !important;
-        }
-
-        body,
-        header,
-        section,
-        input,
-        textarea,
-        button,
-        #userMenu,
-        #equipamentoResultados,
-        #perfilModal {
-            transition:
-                background-color .2s ease,
-                border-color .2s ease,
-                color .2s ease;
-        }
-
-        .status-button {
-            user-select: none;
-        }
-    </style>
+    <link rel="stylesheet" href="./ellenco-theme.css">
 </head>
 
 <body
@@ -256,13 +46,13 @@
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            <div class="h-20 flex items-center justify-between">
+            <div class="h-16 sm:h-20 flex items-center justify-between gap-2">
 
                 <!-- LOGO -->
-                <div class="flex items-center gap-3.5">
+                <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
 
                     <div
-                        class="w-11 h-11 rounded-xl bg-ellenco-blue flex items-center justify-center shadow-md shadow-ellenco-blue/20 ring-1 ring-black/5">
+                        class="w-10 h-10 sm:w-11 sm:h-11 shrink-0 rounded-xl bg-ellenco-blue flex items-center justify-center shadow-md shadow-ellenco-blue/20 ring-1 ring-black/5">
 
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -271,12 +61,12 @@
 
                     </div>
 
-                    <div>
-                        <h1 class="text-2xl font-black tracking-tight text-ellenco-blue italic">
+                    <div class="min-w-0">
+                        <h1 class="text-lg min-[400px]:text-xl sm:text-2xl font-black tracking-tight text-ellenco-blue italic">
                             Ellenco<span class="text-ellenco-red">Check</span>
                         </h1>
 
-                        <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                        <p class="hidden sm:block text-xs font-semibold text-slate-400 uppercase tracking-wider">
                             Gestão de Inspeções
                         </p>
                     </div>
@@ -284,7 +74,13 @@
                 </div>
 
                 <!-- DIREITA -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 shrink-0">
+
+                    <!-- NAVEGAÇÃO -->
+                    <a href="./historico.html"
+                        class="hidden md:inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-ellenco-blue hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        Histórico
+                    </a>
 
                     <!-- TEMA -->
                     <button id="themeToggle" type="button" onclick="alternarTema()" title="Alternar tema"
@@ -312,7 +108,7 @@
                     <div class="relative">
 
                         <button id="userMenuButton" type="button" onclick="toggleUserMenu()"
-                            class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
+                            class="flex items-center gap-2 sm:gap-3 px-1 sm:px-3 py-1 sm:py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
 
                             <div id="userAvatar"
                                 class="w-10 h-10 rounded-full bg-ellenco-blue text-white flex items-center justify-center font-black uppercase">
@@ -331,7 +127,7 @@
 
                             </div>
 
-                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="hidden sm:block w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M6 9l6 6 6-6" />
@@ -361,6 +157,18 @@
                             </div>
 
                             <div class="p-2">
+
+                                <a href="./historico.html"
+                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    <svg class="w-5 h-5 text-ellenco-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    Histórico e PDFs
+                                </a>
+
+                                <a id="menuUsuarios" href="./usuarios.html"
+                                    class="hidden w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    <svg class="w-5 h-5 text-ellenco-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                    Gerenciar usuários
+                                </a>
 
                                 <button type="button" onclick="abrirPerfil()"
                                     class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 transition">
@@ -410,7 +218,7 @@
          CONTEÚDO
     ====================================================== -->
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
 
         <!-- BREADCRUMB -->
         <nav class="flex items-center gap-2 text-xs font-medium text-slate-400 mb-6">
@@ -431,11 +239,11 @@
 
 
         <!-- TÍTULO -->
-        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
 
             <div>
 
-                <h2 class="text-3xl font-black tracking-tight text-ellenco-blue italic uppercase">
+                <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-ellenco-blue italic uppercase">
                     Nova Inspeção
                 </h2>
 
@@ -471,9 +279,9 @@
         ====================================================== -->
 
         <section
-            class="bg-white dark:bg-slate-900 rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
+            class="bg-white dark:bg-slate-900 rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200 dark:border-slate-700 shadow-sm mb-8">
 
-            <div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700">
+            <div class="px-4 sm:px-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700 rounded-t-xl">
 
                 <h3 class="font-bold text-ellenco-blue italic uppercase text-lg">
                     Equipamento
@@ -485,9 +293,9 @@
 
             </div>
 
-            <div class="p-6">
+            <div class="p-4 sm:p-6">
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
 
                     <!-- BUSCA -->
                     <div class="lg:col-span-2 relative">
@@ -508,7 +316,7 @@
                             </svg>
 
                             <input id="equipamentoBusca" type="text" autocomplete="off"
-                                placeholder="Digite nome, placa, modelo ou patrimônio..."
+                                placeholder="Nome, placa, prefixo ou patrimônio..."
                                 class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-700 focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10 font-medium">
 
                         </div>
@@ -520,7 +328,7 @@
                         <input type="hidden" id="equipamento">
 
                         <p class="text-[11px] text-slate-400 mt-2">
-                            Pesquise pelo nome, placa, modelo ou patrimônio.
+                            Pesquise pelo nome, placa, prefixo, modelo, patrimônio ou tipo.
                         </p>
 
                     </div>
@@ -555,23 +363,23 @@
                 <div id="selectedEquipment"
                     class="hidden mt-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
 
-                    <div class="flex items-center justify-between gap-4">
+                    <div class="flex items-center justify-between gap-3">
 
-                        <div class="flex items-center gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
 
                             <div
-                                class="w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                                class="shrink-0 w-10 h-10 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
                                 ✓
                             </div>
 
-                            <div>
+                            <div class="min-w-0">
 
                                 <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">
                                     Equipamento selecionado
                                 </p>
 
                                 <p id="selectedEquipmentName"
-                                    class="font-black text-slate-800 dark:text-slate-100 text-sm">
+                                    class="font-black text-slate-800 dark:text-slate-100 text-sm break-words">
                                     —
                                 </p>
 
@@ -580,7 +388,7 @@
                         </div>
 
                         <button type="button" onclick="limparEquipamento()"
-                            class="text-xs font-bold text-slate-500 hover:text-ellenco-red transition">
+                            class="shrink-0 px-3 py-2 -mr-2 text-xs font-bold text-slate-500 hover:text-ellenco-red transition">
                             Trocar
                         </button>
 
@@ -591,11 +399,11 @@
 
                 <!-- INFORMAÇÕES -->
                 <div id="equipmentInfo"
-                    class="hidden mt-6 p-5 bg-ellenco-blue/5 rounded-xl border border-ellenco-blue/15">
+                    class="hidden mt-5 sm:mt-6 p-4 sm:p-5 bg-ellenco-blue/5 rounded-xl border border-ellenco-blue/15">
 
                     <div class="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6 items-center">
 
-                        <div>
+                        <div class="w-full max-w-xs mx-auto md:max-w-none md:mx-0">
 
                             <div
                                 class="aspect-video rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
@@ -628,41 +436,48 @@
                         </div>
 
 
-                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
 
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                                     Modelo
                                 </p>
-                                <p id="modelo" class="mt-1 font-bold text-ellenco-blue text-sm">-</p>
+                                <p id="modelo" class="mt-1 font-bold text-ellenco-blue text-sm break-words">-</p>
                             </div>
 
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                                     Fabricante
                                 </p>
-                                <p id="fabricante" class="mt-1 font-bold text-ellenco-blue text-sm">-</p>
+                                <p id="fabricante" class="mt-1 font-bold text-ellenco-blue text-sm break-words">-</p>
                             </div>
 
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                                     Patrimônio
                                 </p>
-                                <p id="patrimonio" class="mt-1 font-bold text-ellenco-blue text-sm">-</p>
+                                <p id="patrimonio" class="mt-1 font-bold text-ellenco-blue text-sm break-words">-</p>
+                            </div>
+
+                            <div>
+                                <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                                    Prefixo
+                                </p>
+                                <p id="prefixo" class="mt-1 font-black text-ellenco-red text-sm break-words">-</p>
                             </div>
 
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                                     Placa
                                 </p>
-                                <p id="placa" class="mt-1 font-black text-ellenco-red text-sm">-</p>
+                                <p id="placa" class="mt-1 font-black text-ellenco-red text-sm break-words">-</p>
                             </div>
 
                             <div>
                                 <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                                     Status
                                 </p>
-                                <p id="equipmentStatus" class="mt-1 font-bold text-emerald-600 text-sm">-</p>
+                                <p id="equipmentStatus" class="mt-1 font-bold text-emerald-600 text-sm break-words">-</p>
                             </div>
 
                         </div>
@@ -684,7 +499,7 @@
             class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
 
             <div
-                class="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
                 <div>
 
@@ -694,6 +509,10 @@
 
                     <p class="text-xs text-slate-500">
                         Avalie todos os componentes requeridos do equipamento.
+                    </p>
+
+                    <p class="mt-1 text-xs font-bold text-ellenco-red">
+                        Comunicar o encarregado imediatamente sobre itens não conformes, para a regularização.
                     </p>
 
                 </div>
@@ -728,9 +547,9 @@
 
 
             <!-- LEGENDA -->
-            <div class="px-6 py-3 bg-slate-50/60 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
+            <div class="px-4 sm:px-6 py-3 bg-slate-50/60 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
 
-                <div class="flex flex-wrap items-center gap-6 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
 
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
@@ -742,18 +561,13 @@
                         Problema encontrado
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
-                        Não se aplica
-                    </div>
-
                 </div>
 
             </div>
 
 
             <!-- ITENS -->
-            <div id="checklistContainer" class="p-6 space-y-4">
+            <div id="checklistContainer" class="p-3 sm:p-6 space-y-3 sm:space-y-4">
 
                 <div class="py-12 text-center text-slate-400">
 
@@ -777,7 +591,7 @@
         ====================================================== -->
 
         <section
-            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 mb-8">
+            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-6 mb-8">
 
             <div class="flex items-center gap-3 mb-4">
 
@@ -813,29 +627,29 @@
 
         <section class="bg-ellenco-blue rounded-2xl p-6 sm:p-8 mb-8 shadow-xl shadow-ellenco-blue/15 text-white">
 
-            <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center justify-between gap-4 mb-6">
 
-                <div>
+                <div class="min-w-0">
 
                     <p class="text-xs font-bold text-slate-300 uppercase tracking-wider">
                         Resultado da Inspeção
                     </p>
 
-                    <h3 id="resultText" class="text-2xl font-black text-white italic uppercase mt-1">
+                    <h3 id="resultText" class="text-lg sm:text-2xl font-black text-white italic uppercase mt-1">
                         Aguardando Preenchimento
                     </h3>
 
                 </div>
 
                 <div id="resultIcon"
-                    class="w-12 h-12 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-bold">
+                    class="shrink-0 w-12 h-12 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-xl font-bold">
                     —
                 </div>
 
             </div>
 
 
-            <div class="grid grid-cols-3 gap-3 sm:gap-4">
+            <div class="grid grid-cols-2 gap-3 sm:gap-4">
 
                 <div class="bg-white/10 border border-white/10 rounded-xl p-4">
 
@@ -861,20 +675,6 @@
                     </p>
 
                 </div>
-
-
-                <div class="bg-white/10 border border-white/10 rounded-xl p-4">
-
-                    <p id="naCount" class="text-2xl sm:text-3xl font-black text-slate-300">
-                        0
-                    </p>
-
-                    <p class="text-xs font-semibold text-slate-300 mt-1 uppercase">
-                        N/A
-                    </p>
-
-                </div>
-
             </div>
 
         </section>
@@ -886,6 +686,34 @@
 
 
         <!-- FINALIZAR -->
+        <!-- PAINEL DE SUCESSO (aparece após salvar) -->
+        <div id="successPanel"
+            class="hidden mb-8 rounded-2xl border-t-4 border-t-emerald-500 border-x border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-5 sm:p-8">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-2xl font-black shrink-0">✓</div>
+                <div class="min-w-0">
+                    <h3 id="successTitle" class="text-xl font-black italic uppercase text-ellenco-blue">Inspeção registrada</h3>
+                    <p id="successText" class="text-sm text-slate-500 mt-1"></p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                <button type="button" id="btnPdfBaixar" onclick="baixarPdfInspecao('baixar')"
+                    class="h-12 rounded-xl bg-ellenco-blue hover:bg-ellenco-blue-dark text-white font-bold text-sm transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-wait">
+                    <span>Baixar PDF</span>
+                </button>
+                <button type="button" id="btnPdfAbrir" onclick="baixarPdfInspecao('abrir')"
+                    class="h-12 rounded-xl border-2 border-ellenco-blue text-ellenco-blue font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-60 disabled:cursor-wait">
+                    Visualizar PDF
+                </button>
+                <button type="button" onclick="novaInspecao()"
+                    class="h-12 rounded-xl bg-ellenco-red hover:bg-ellenco-red-hover text-white font-bold text-sm transition">
+                    Nova inspeção
+                </button>
+            </div>
+            <p id="pdfStatus" class="text-xs text-slate-400 mt-3 min-h-[1rem]"></p>
+        </div>
+
+        <div id="submitArea">
         <button id="submitButton" type="button" onclick="enviarChecklist()"
             class="w-full h-14 bg-ellenco-red hover:bg-ellenco-red-hover active:scale-[0.99] text-white rounded-xl font-black italic uppercase tracking-wider shadow-lg shadow-ellenco-red/20 transition-all flex items-center justify-center gap-2 cursor-pointer text-lg">
 
@@ -904,6 +732,7 @@
         <p class="text-center text-xs text-slate-400 mt-4">
             Ao finalizar, os dados serão validados e salvos no histórico da empresa.
         </p>
+        </div>
 
     </main>
 
@@ -915,7 +744,7 @@
     <div id="perfilModal"
         class="hidden fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
 
-        <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden">
+        <div class="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl">
 
             <div class="bg-ellenco-blue p-6 text-white">
 
@@ -948,15 +777,15 @@
                 <div class="flex flex-col items-center mb-6">
 
                     <div id="profileAvatar"
-                        class="w-24 h-24 rounded-full bg-ellenco-blue text-white flex items-center justify-center text-3xl font-black uppercase shadow-lg">
+                        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-ellenco-blue text-white flex items-center justify-center text-3xl font-black uppercase shadow-lg">
                         ?
                     </div>
 
-                    <h3 id="profileName" class="text-xl font-black text-slate-800 dark:text-slate-100 mt-4">
+                    <h3 id="profileName" class="text-xl font-black text-slate-800 dark:text-slate-100 mt-4 text-center break-words">
                         Usuário
                     </h3>
 
-                    <p id="profileEmail" class="text-sm text-slate-400">
+                    <p id="profileEmail" class="text-sm text-slate-400 text-center break-all">
                         —
                     </p>
 
@@ -972,7 +801,7 @@
                             Nome
                         </p>
 
-                        <p id="profileNameInfo" class="font-bold text-slate-700 dark:text-slate-200 mt-1">
+                        <p id="profileNameInfo" class="font-bold text-slate-700 dark:text-slate-200 mt-1 break-words">
                             —
                         </p>
 
@@ -1000,7 +829,7 @@
                             ID do usuário
                         </p>
 
-                        <p id="profileId" class="font-bold text-slate-700 dark:text-slate-200 mt-1">
+                        <p id="profileId" class="font-bold text-slate-700 dark:text-slate-200 mt-1 break-all text-xs sm:text-sm">
                             —
                         </p>
 
@@ -1042,15 +871,17 @@
         let itens = [];
         let equipamentoSelecionado = null;
         let enviando = false;
+        let itensRequestId = 0;          // evita que uma resposta antiga sobrescreva a mais recente
+        let ultimaInspecaoId = null;     // inspeção recém-salva (para gerar o PDF)
+        let perfilAtual = null;
 
-        // A interface usa valores simples ("ok", "problema", "nao_aplicavel")
+        // A interface usa valores simples ("ok", "problema")
         // para estilizar os botões, mas a API/banco de dados espera os
         // códigos definidos no schema. Este mapa converte um valor no outro
         // apenas na hora de montar o payload enviado ao backend.
         const STATUS_ITEM_API = {
             ok: "OK",
-            problema: "PROBLEMA",
-            nao_aplicavel: "NAO_APLICAVEL"
+            problema: "PROBLEMA"
         };
 
 
@@ -1075,7 +906,6 @@
 
         const okCount = document.getElementById("okCount");
         const problemCount = document.getElementById("problemCount");
-        const naCount = document.getElementById("naCount");
 
         const resultText = document.getElementById("resultText");
         const resultIcon = document.getElementById("resultIcon");
@@ -1085,48 +915,6 @@
         const submitButton = document.getElementById("submitButton");
         const submitText = document.getElementById("submitText");
         const submitIcon = document.getElementById("submitIcon");
-
-
-        /* =====================================================
-           TEMA
-        ====================================================== */
-
-        function aplicarTema() {
-
-            const tema = localStorage.getItem("ellencocheck_tema");
-
-            if (tema === "dark") {
-                document.documentElement.classList.add("dark");
-                return;
-            }
-
-            if (tema === "light") {
-                document.documentElement.classList.remove("dark");
-                return;
-            }
-
-            if (
-                window.matchMedia &&
-                window.matchMedia("(prefers-color-scheme: dark)").matches
-            ) {
-                document.documentElement.classList.add("dark");
-            }
-        }
-
-
-        function alternarTema() {
-
-            const html = document.documentElement;
-            const dark = html.classList.toggle("dark");
-
-            localStorage.setItem(
-                "ellencocheck_tema",
-                dark ? "dark" : "light"
-            );
-        }
-
-
-        aplicarTema();
 
 
         /* =====================================================
@@ -1146,7 +934,7 @@
         async function carregarUsuario() {
             const { data: { user }, error } = await sb.auth.getUser();
             if (error || !user) {
-                window.location.href = "./login.html";
+                window.location.replace("./login.html");
                 return false;
             }
 
@@ -1159,11 +947,15 @@
             if (profileError || !usuario || !usuario.ativo) {
                 await sb.auth.signOut();
                 localStorage.removeItem("usuario");
-                window.location.href = "./login.html";
+                window.location.replace("./login.html");
                 return false;
             }
 
             localStorage.setItem("usuario", JSON.stringify(usuario));
+            perfilAtual = usuario;
+            if (usuario.role === "admin") {
+                document.getElementById("menuUsuarios").classList.remove("hidden");
+            }
 
             const nome = String(usuario.nome || "Usuário");
             const email = String(usuario.email || user.email || "—");
@@ -1290,6 +1082,12 @@
         }
 
 
+        function obterPrefixo(eq) {
+
+            return eq?.prefixo ?? "";
+        }
+
+
         function obterImagem(eq) {
 
             return (
@@ -1319,9 +1117,13 @@
             const nome = obterNomeEquipamento(eq);
             const placa = obterPlaca(eq);
 
+            const prefixo = obterPrefixo(eq);
+
             return placa
                 ? `${nome} (${placa})`
-                : nome;
+                : prefixo
+                    ? `${nome} (${prefixo})`
+                    : nome;
         }
 
 
@@ -1365,7 +1167,7 @@
                 }));
 
                 equipamentoBusca.disabled = false;
-                equipamentoBusca.placeholder = "Digite nome, placa, modelo ou patrimônio...";
+                equipamentoBusca.placeholder = "Nome, placa, prefixo ou patrimônio...";
 
                 if (!equipamentos.length) {
                     mostrarMensagem("Nenhum equipamento foi encontrado no sistema.", "erro");
@@ -1394,24 +1196,22 @@
             }
 
 
+            // todas as palavras digitadas precisam aparecer (em qualquer campo)
+            const termos = busca.split(/\s+/).filter(Boolean);
+
             const resultados = equipamentos.filter(eq => {
 
-                const campos = [
-
+                const texto = normalizarTexto([
                     obterNomeEquipamento(eq),
                     obterPlaca(eq),
+                    obterPrefixo(eq),
                     obterModelo(eq),
                     obterFabricante(eq),
                     obterPatrimonio(eq),
-                    obterIdEquipamento(eq)
+                    eq.tipo_nome
+                ].join(" "));
 
-                ];
-
-
-                return campos.some(campo =>
-                    normalizarTexto(campo).includes(busca)
-                );
-
+                return termos.every(t => texto.includes(t));
             });
 
 
@@ -1437,7 +1237,7 @@
                         </p>
 
                         <p class="text-xs text-slate-400 mt-1">
-                            Tente pesquisar por outro nome, placa ou patrimônio.
+                            Tente pesquisar por outro nome, placa, prefixo ou patrimônio.
                         </p>
 
                     </div>
@@ -1476,6 +1276,9 @@
                 const patrimonio =
                     obterPatrimonio(eq);
 
+                const prefixo =
+                    obterPrefixo(eq);
+
 
                 button.innerHTML = `
 
@@ -1505,6 +1308,15 @@
                         ? `
                                             <span class="text-[11px] text-slate-400">
                                                 Modelo: ${escapeHtml(modelo)}
+                                            </span>
+                                          `
+                        : ""
+                    }
+
+                                ${prefixo
+                        ? `
+                                            <span class="text-[11px] text-slate-400">
+                                                Prefixo: ${escapeHtml(prefixo)}
                                             </span>
                                           `
                         : ""
@@ -1638,6 +1450,10 @@
                 obterPlaca(eq) || "-";
 
 
+            document.getElementById("prefixo").textContent =
+                obterPrefixo(eq) || "-";
+
+
             document.getElementById("equipmentStatus").textContent =
                 formatarStatus(
                     eq.status ??
@@ -1745,6 +1561,7 @@
             document.getElementById("fabricante").textContent = "-";
             document.getElementById("patrimonio").textContent = "-";
             document.getElementById("placa").textContent = "-";
+            document.getElementById("prefixo").textContent = "-";
             document.getElementById("equipmentStatus").textContent = "-";
 
 
@@ -1816,7 +1633,33 @@
            CHECKLIST
         ====================================================== */
 
+        const HTML_SEM_EQUIPAMENTO = `
+                    <div class="text-center py-12 text-slate-400">
+                        <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl font-black mb-4">?</div>
+                        <p class="text-sm font-semibold text-slate-500">Selecione um equipamento para carregar o checklist.</p>
+                        <p class="text-xs mt-1">Os itens exibidos dependem do tipo de equipamento.</p>
+                    </div>`;
+
+        function mostrarPlaceholderChecklist() {
+            itensRequestId++;
+            itens = [];
+            checklistContainer.innerHTML = HTML_SEM_EQUIPAMENTO;
+            atualizarProgresso();
+        }
+
+        function recarregarItens() {
+            carregarItens(obterTipoIdEquipamento(equipamentoSelecionado));
+        }
+
         async function carregarItens(tipoId) {
+            // Sem equipamento não há checklist: cada tipo tem seus próprios itens.
+            if (!tipoId) {
+                mostrarPlaceholderChecklist();
+                return;
+            }
+
+            const requisicao = ++itensRequestId;
+
             try {
                 checklistContainer.innerHTML = `
                     <div class="py-12 text-center text-slate-400">
@@ -1824,19 +1667,20 @@
                         <p class="text-sm font-medium">Carregando checklist...</p>
                     </div>`;
 
-                let query = sb.from("itens_inspecao")
+                const { data, error } = await sb.from("itens_inspecao")
                     .select("*")
                     .eq("ativo", true)
-                    .order("ordem");
+                    .eq("tipo_id", tipoId)
+                    .order("ordem")
+                    .order("id");
 
-                if (tipoId) query = query.eq("tipo_id", tipoId);
-
-                const { data, error } = await query;
+                if (requisicao !== itensRequestId) return; // resposta antiga: ignora
                 if (error) throw error;
 
                 itens = data || [];
                 renderizarItens();
             } catch (error) {
+                if (requisicao !== itensRequestId) return;
                 console.error("Erro ao carregar itens:", error);
                 itens = [];
                 checklistContainer.innerHTML = `
@@ -1844,13 +1688,13 @@
                         <div class="w-12 h-12 mx-auto rounded-full bg-red-50 dark:bg-red-950/30 text-ellenco-red flex items-center justify-center text-xl font-black mb-4">!</div>
                         <p class="font-semibold text-ellenco-red">Erro ao carregar os itens de inspeção</p>
                         <p class="text-xs text-slate-400 mt-2">Confira se o SQL do Supabase foi executado.</p>
-                        <button type="button" onclick="carregarItens()" class="mt-4 px-4 py-2 rounded-lg bg-ellenco-blue text-white text-xs font-bold hover:bg-ellenco-blue-dark transition">Tentar novamente</button>
+                        <button type="button" onclick="recarregarItens()" class="mt-4 px-4 py-2 rounded-lg bg-ellenco-blue text-white text-xs font-bold hover:bg-ellenco-blue-dark transition">Tentar novamente</button>
                     </div>`;
                 atualizarProgresso();
             }
         }
 
-        function renderizarItens() {
+                function renderizarItens() {
 
             checklistContainer.innerHTML = "";
 
@@ -1944,10 +1788,11 @@
 
                 itemDiv.dataset.itemId =
                     String(itemId);
+                itemDiv.dataset.itemNome = String(nome);
 
 
                 itemDiv.className =
-                    "group border border-slate-200 dark:border-slate-700 rounded-xl p-4 transition-all hover:border-ellenco-blue/40 hover:shadow-sm bg-white dark:bg-slate-800";
+                    "group border border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 transition-all hover:border-ellenco-blue/40 hover:shadow-sm bg-white dark:bg-slate-800";
 
 
                 itemDiv.innerHTML = `
@@ -1958,12 +1803,12 @@
 
                             <span class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">
 
-                                ${escapeHtml(itemId)}
+                                ${index + 1}
 
                             </span>
 
 
-                            <span class="font-bold text-slate-800 dark:text-slate-100 text-sm">
+                            <span class="min-w-0 break-words font-bold text-slate-800 dark:text-slate-100 text-sm">
 
                                 ${escapeHtml(nome)}
 
@@ -1972,13 +1817,13 @@
                         </div>
 
 
-                        <div class="grid grid-cols-3 gap-2 w-full lg:w-auto shrink-0">
+                        <div class="grid grid-cols-2 gap-2 w-full lg:w-auto shrink-0">
 
                             <button
                                 type="button"
                                 data-status="ok"
                                 onclick="selecionarStatus(${Number(itemId)}, 'ok')"
-                                class="status-button h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                class="status-button h-11 sm:h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
 
                                 <span class="text-emerald-500 font-extrabold">
                                     ✓
@@ -1993,7 +1838,7 @@
                                 type="button"
                                 data-status="problema"
                                 onclick="selecionarStatus(${Number(itemId)}, 'problema')"
-                                class="status-button h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                class="status-button h-11 sm:h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
 
                                 <span class="text-ellenco-red font-extrabold">
                                     !
@@ -2002,18 +1847,6 @@
                                 Problema
 
                             </button>
-
-
-                            <button
-                                type="button"
-                                data-status="nao_aplicavel"
-                                onclick="selecionarStatus(${Number(itemId)}, 'nao_aplicavel')"
-                                class="status-button h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center cursor-pointer">
-
-                                N/A
-
-                            </button>
-
                         </div>
 
                     </div>
@@ -2050,7 +1883,7 @@
 
 
                                 <label
-                                    class="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-ellenco-red text-white text-xs font-bold cursor-pointer hover:bg-ellenco-red-hover transition">
+                                    class="inline-flex items-center justify-center gap-2 h-11 sm:h-10 px-4 rounded-lg bg-ellenco-red text-white text-xs font-bold cursor-pointer hover:bg-ellenco-red-hover transition">
 
                                     📷 Tirar / escolher foto
 
@@ -2081,7 +1914,7 @@
                                     <button
                                         type="button"
                                         onclick="removerFotoProblema(${Number(itemId)})"
-                                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 text-white font-bold hover:bg-black/90 transition">
+                                        class="absolute top-2 right-2 w-9 h-9 rounded-full bg-black/70 text-white font-bold hover:bg-black/90 transition">
 
                                         ×
 
@@ -2130,8 +1963,7 @@
                 .querySelectorAll(".status-button")
                 .forEach(btn => {
 
-                    btn.className =
-                        "status-button h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer";
+                    btn.removeAttribute("data-selected");
 
                 });
 
@@ -2146,30 +1978,7 @@
                 return;
             }
 
-
-            if (status === "ok") {
-
-                selectedBtn.className +=
-                    " bg-emerald-500 border-emerald-500 text-white shadow-sm";
-
-            }
-
-
-            if (status === "problema") {
-
-                selectedBtn.className +=
-                    " bg-ellenco-red border-ellenco-red text-white shadow-sm";
-
-            }
-
-
-            if (status === "nao_aplicavel") {
-
-                selectedBtn.className +=
-                    " bg-slate-700 border-slate-700 text-white";
-
-            }
-
+            selectedBtn.setAttribute("data-selected", status);
 
             itemDiv.dataset.status =
                 status;
@@ -2328,7 +2137,6 @@
 
             let ok = 0;
             let problemas = 0;
-            let na = 0;
 
 
             allItems.forEach(item => {
@@ -2341,15 +2149,11 @@
                     problemas++;
                 }
 
-                else if (item.dataset.status === "nao_aplicavel") {
-                    na++;
-                }
-
             });
 
 
             const preenchidos =
-                ok + problemas + na;
+                ok + problemas;
 
 
             const percent =
@@ -2374,10 +2178,6 @@
 
             problemCount.textContent =
                 problemas;
-
-
-            naCount.textContent =
-                na;
 
 
             if (!preenchidos) {
@@ -2487,95 +2287,52 @@
 
         function validarInspecao() {
 
-            const eqId =
-                equipamentoInput.value;
-
-
-            if (!eqId) {
-
-                mostrarMensagem(
-                    "Selecione um equipamento antes de finalizar a inspeção.",
-                    "erro"
-                );
-
+            if (!equipamentoInput.value) {
+                mostrarMensagem("Selecione um equipamento antes de finalizar a inspeção.", "erro");
                 equipamentoBusca.focus();
-
                 return false;
             }
 
+            const horimetroTexto = horimetroInput.value.trim();
+            const horimetro = Number(horimetroTexto);
+            if (horimetroTexto === "" || !Number.isFinite(horimetro) || horimetro < 0) {
+                mostrarMensagem("Informe o horímetro atual do equipamento.", "erro");
+                horimetroInput.scrollIntoView({ behavior: "smooth", block: "center" });
+                horimetroInput.focus();
+                return false;
+            }
 
-            const allItems =
-                document.querySelectorAll(
-                    "[data-item-id]"
-                );
-
-
+            const allItems = document.querySelectorAll("[data-item-id]");
             if (!allItems.length) {
-
-                mostrarMensagem(
-                    "Não existem itens de inspeção para preencher.",
-                    "erro"
-                );
-
+                mostrarMensagem("Não existem itens de inspeção para preencher.", "erro");
                 return false;
             }
 
-
+            let numero = 0;
             for (const item of allItems) {
-
-                const status =
-                    item.dataset.status;
-
-
-                const id =
-                    item.dataset.itemId;
-
+                numero++;
+                const status = item.dataset.status;
+                const id = item.dataset.itemId;
+                const nome = item.dataset.itemNome || `Item ${numero}`;
 
                 if (!status) {
-
-                    mostrarMensagem(
-                        `O item ${id} ainda não foi avaliado.`,
-                        "erro"
-                    );
-
-                    item.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center"
-                    });
-
+                    mostrarMensagem(`O item ${numero} (${nome}) ainda não foi avaliado.`, "erro");
+                    item.scrollIntoView({ behavior: "smooth", block: "center" });
                     return false;
                 }
 
-
                 if (status === "problema") {
-
-                    const obs =
-                        document.getElementById(
-                            `observation-input-${id}`
-                        );
-
-
-                    if (
-                        !obs ||
-                        !obs.value.trim()
-                    ) {
-
-                        mostrarMensagem(
-                            `Descreva o problema encontrado no item ${id}.`,
-                            "erro"
-                        );
-
+                    const obs = document.getElementById(`observation-input-${id}`);
+                    if (!obs || !obs.value.trim()) {
+                        mostrarMensagem(`Descreva o problema encontrado no item ${numero} (${nome}).`, "erro");
+                        obs?.scrollIntoView({ behavior: "smooth", block: "center" });
                         obs?.focus();
-
                         return false;
                     }
                 }
             }
-
-
             return true;
         }
-
 
         /* =====================================================
            MONTAR RESPOSTAS
@@ -2583,77 +2340,92 @@
 
         function montarRespostas() {
 
-            const allItems =
-                document.querySelectorAll(
-                    "[data-item-id]"
-                );
-
-
             const respostas = [];
 
+            document.querySelectorAll("[data-item-id]").forEach(item => {
+                const id = Number(item.dataset.itemId);
+                const status = item.dataset.status;
+                const obsInput = document.getElementById(`observation-input-${id}`);
+                const photoInput = document.getElementById(`photo-input-${id}`);
 
-            allItems.forEach(item => {
-
-                const id =
-                    Number(item.dataset.itemId);
-
-
-                const status =
-                    item.dataset.status;
-
-
-                const obsInput =
-                    document.getElementById(
-                        `observation-input-${id}`
-                    );
-
-
-                const photoInput =
-                    document.getElementById(
-                        `photo-input-${id}`
-                    );
-
-
-                const arquivo =
-                    photoInput?.files?.[0];
-
+                // Foto e observação só valem para itens com problema. Se a pessoa
+                // marcou "Problema", anexou foto e depois mudou para OK, descarta.
+                const problema = status === "problema";
+                const arquivo = problema ? (photoInput?.files?.[0] || null) : null;
 
                 respostas.push({
-
                     item_inspecao_id: id,
-
-                    status:
-                        STATUS_ITEM_API[status] || status,
-
-                    observacao:
-                        obsInput?.value?.trim() || "",
-
-                    foto_nome:
-                        arquivo?.name || null
-
+                    status: STATUS_ITEM_API[status] || status,
+                    observacao: problema ? (obsInput?.value?.trim() || "") : "",
+                    foto_nome: arquivo?.name || null,
+                    arquivo,
+                    foto_path: null
                 });
-
             });
-
 
             return respostas;
         }
-
 
         /* =====================================================
            ENVIAR CHECKLIST
         ====================================================== */
 
-        async function enviarChecklist() {
-            if (enviando) return;
-            esconderMensagem();
+        /* ---------- fotos: reduz o tamanho antes de enviar ao Storage ---------- */
 
+        async function prepararFoto(arquivo, maxLado = 1600, qualidade = 0.82) {
+            if (!arquivo.type || !arquivo.type.startsWith("image/")) {
+                throw new Error("O arquivo selecionado não é uma imagem.");
+            }
+            const url = URL.createObjectURL(arquivo);
+            try {
+                const img = await new Promise((resolve, reject) => {
+                    const el = new Image();
+                    el.onload = () => resolve(el);
+                    el.onerror = () => reject(new Error("Não foi possível ler a imagem."));
+                    el.src = url;
+                });
+                const escala = Math.min(1, maxLado / Math.max(img.naturalWidth, img.naturalHeight));
+                const w = Math.max(1, Math.round(img.naturalWidth * escala));
+                const h = Math.max(1, Math.round(img.naturalHeight * escala));
+                const canvas = document.createElement("canvas");
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext("2d");
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, 0, 0, w, h);
+                const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/jpeg", qualidade));
+                if (!blob) throw new Error("Falha ao comprimir a imagem.");
+                return blob;
+            } finally {
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        function gerarIdArquivo() {
+            if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+            return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+        }
+
+        function definirBotaoEnvio(carregando, texto) {
+            submitButton.disabled = carregando;
+            submitButton.classList.toggle("opacity-50", carregando);
+            submitButton.classList.toggle("cursor-not-allowed", carregando);
+            submitText.textContent = texto;
+            submitIcon.classList.toggle("hidden", carregando);
+        }
+
+        async function enviarChecklist() {
+
+            if (enviando) return;
+
+            esconderMensagem();
             if (!validarInspecao()) return;
 
             const { data: { user }, error: userError } = await sb.auth.getUser();
             if (userError || !user) {
                 mostrarMensagem("Sessão expirada. Faça login novamente.", "erro");
-                window.location.href = "./login.html";
+                setTimeout(() => { window.location.replace("./login.html"); }, 1200);
                 return;
             }
 
@@ -2666,19 +2438,43 @@
             if (problemas > 0) statusChecklist = "REPROVADO";
             else if (observacoesGerais) statusChecklist = "APROVADO_COM_OBSERVACAO";
 
+            const fotosEnviadas = [];
+            let checklistSalvo = false;
+            let falhasFoto = 0;
+
             try {
                 enviando = true;
-                submitButton.disabled = true;
-                submitButton.classList.add("opacity-50", "cursor-not-allowed");
-                submitText.textContent = "Salvando inspeção...";
-                submitIcon.classList.add("hidden");
+                definirBotaoEnvio(true, "Salvando inspeção...");
 
+                // 1) Fotos das avarias -> Supabase Storage
+                const bucket = window.EllencoPDF?.BUCKET_FOTOS || "inspecao-fotos";
+                for (const r of respostas) {
+                    if (!r.arquivo) continue;
+                    definirBotaoEnvio(true, "Enviando fotos...");
+                    try {
+                        const blob = await prepararFoto(r.arquivo);
+                        const caminho = `${user.id}/${gerarIdArquivo()}.jpg`;
+                        const { error: upError } = await sb.storage
+                            .from(bucket)
+                            .upload(caminho, blob, { contentType: "image/jpeg", upsert: false });
+                        if (upError) throw upError;
+                        r.foto_path = caminho;
+                        fotosEnviadas.push(caminho);
+                    } catch (fotoError) {
+                        console.warn("Foto não enviada:", fotoError);
+                        falhasFoto++;
+                    }
+                }
+
+                definirBotaoEnvio(true, "Salvando inspeção...");
+
+                // 2) Cabeçalho da inspeção
                 const { data: checklist, error: checklistError } = await sb
                     .from("checklists")
                     .insert({
                         equipamento_id: Number(equipamentoInput.value),
                         usuario_id: user.id,
-                        horimetro: Number.isFinite(horimetro) ? horimetro : 0,
+                        horimetro: horimetro,
                         status: statusChecklist,
                         observacoes: observacoesGerais
                     })
@@ -2687,12 +2483,14 @@
 
                 if (checklistError) throw checklistError;
 
+                // 3) Respostas de cada item
                 const respostasComId = respostas.map(r => ({
                     checklist_id: checklist.id,
                     item_inspecao_id: r.item_inspecao_id,
                     status: r.status,
                     observacao: r.observacao,
-                    foto_nome: r.foto_nome
+                    foto_nome: r.foto_nome,
+                    foto_path: r.foto_path
                 }));
 
                 const { error: respostasError } = await sb
@@ -2700,25 +2498,103 @@
                     .insert(respostasComId);
 
                 if (respostasError) {
+                    // evita inspeção "pela metade"
                     await sb.from("checklists").delete().eq("id", checklist.id);
                     throw respostasError;
                 }
 
-                mostrarMensagem(`Inspeção #${checklist.id} enviada e salva com sucesso!`, "sucesso");
-                resultText.textContent = problemas > 0
-                    ? "Inspeção registrada com problemas"
-                    : "Inspeção registrada com sucesso";
-                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+                checklistSalvo = true;
+                exibirSucesso(checklist.id, problemas, falhasFoto);
+
             } catch (error) {
                 console.error("Erro ao salvar inspeção:", error);
-                mostrarMensagem(`Não foi possível salvar a inspeção: ${error.message || error}`, "erro");
+
+                // a inspeção não foi salva: não deixa fotos órfãs no Storage
+                if (!checklistSalvo && fotosEnviadas.length) {
+                    try {
+                        await sb.storage.from(window.EllencoPDF?.BUCKET_FOTOS || "inspecao-fotos").remove(fotosEnviadas);
+                    } catch (e) { /* ignora */ }
+                }
+
+                let detalhe = error?.message || String(error);
+                if (/foto_path/i.test(detalhe)) {
+                    detalhe = "o banco ainda não tem a coluna das fotos. Execute o arquivo supabase_update_v2.sql no SQL Editor do Supabase.";
+                }
+                mostrarMensagem(`Não foi possível salvar a inspeção: ${detalhe}`, "erro");
+
             } finally {
                 enviando = false;
-                submitButton.disabled = false;
-                submitButton.classList.remove("opacity-50", "cursor-not-allowed");
-                submitText.textContent = "Finalizar Inspeção";
-                submitIcon.classList.remove("hidden");
+                if (!checklistSalvo) definirBotaoEnvio(false, "Finalizar Inspeção");
             }
+        }
+
+        /* ---------- pós-envio: PDF e nova inspeção ---------- */
+
+        function exibirSucesso(id, problemas, falhasFoto) {
+
+            ultimaInspecaoId = id;
+
+            resultText.textContent = problemas > 0
+                ? "Inspeção registrada com problemas"
+                : "Inspeção registrada com sucesso";
+
+            document.getElementById("successTitle").textContent = `Inspeção nº ${String(id).padStart(4, "0")} salva`;
+
+            let texto = problemas > 0
+                ? `Foram registrados ${problemas} problema(s). Baixe o relatório em PDF para enviar à manutenção.`
+                : "Todos os itens foram registrados. Baixe o relatório em PDF para arquivar ou compartilhar.";
+            if (falhasFoto > 0) {
+                texto += ` Atenção: ${falhasFoto} foto(s) não puderam ser enviadas e não aparecerão no PDF.`;
+            }
+            document.getElementById("successText").textContent = texto;
+            document.getElementById("pdfStatus").textContent = "";
+
+            esconderMensagem();
+            document.getElementById("submitArea").classList.add("hidden");
+
+            const painel = document.getElementById("successPanel");
+            painel.classList.remove("hidden");
+            painel.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+
+        async function baixarPdfInspecao(acao) {
+
+            if (!ultimaInspecaoId) return;
+
+            const botoes = [document.getElementById("btnPdfBaixar"), document.getElementById("btnPdfAbrir")];
+            const status = document.getElementById("pdfStatus");
+
+            try {
+                if (!window.EllencoPDF || !window.jspdf) {
+                    throw new Error("as bibliotecas de PDF não carregaram. Verifique a conexão com a internet.");
+                }
+                botoes.forEach(b => b.disabled = true);
+                status.className = "text-xs text-slate-400 mt-3 min-h-[1rem]";
+                status.textContent = "Gerando PDF...";
+
+                await EllencoPDF.gerar(sb, ultimaInspecaoId, { acao, geradoPor: perfilAtual?.nome });
+
+                status.textContent = acao === "abrir" ? "PDF aberto em nova aba." : "PDF gerado. Confira a pasta de downloads.";
+            } catch (error) {
+                console.error("Erro ao gerar PDF:", error);
+                status.className = "text-xs text-ellenco-red mt-3 min-h-[1rem] font-semibold";
+                status.textContent = `Não foi possível gerar o PDF: ${error.message || error}`;
+            } finally {
+                botoes.forEach(b => b.disabled = false);
+            }
+        }
+
+        function novaInspecao() {
+            ultimaInspecaoId = null;
+            document.getElementById("successPanel").classList.add("hidden");
+            document.getElementById("submitArea").classList.remove("hidden");
+            definirBotaoEnvio(false, "Finalizar Inspeção");
+
+            horimetroInput.value = "";
+            observacoesInput.value = "";
+            esconderMensagem();
+            limparEquipamento();   // também volta o checklist para o estado "selecione um equipamento"
+            window.scrollTo({ top: 0, behavior: "smooth" });
         }
 
         /* =====================================================
@@ -2848,8 +2724,7 @@
         async function sair() {
             await sb.auth.signOut();
             localStorage.removeItem("usuario");
-            localStorage.removeItem("frotacheck_token");
-            window.location.href = "./login.html";
+            window.location.replace("./login.html");
         }
 
         /* =====================================================
@@ -2857,18 +2732,15 @@
         ====================================================== */
 
         document.addEventListener("DOMContentLoaded", async function () {
+
             const autenticado = await carregarUsuario();
             if (!autenticado) return;
+            window.ellencoLiberarPagina && window.ellencoLiberarPagina();
 
-            await Promise.allSettled([
-                carregarEquipamentos(),
-                carregarItens()
-            ]);
-
+            mostrarPlaceholderChecklist();
+            await carregarEquipamentos();
             atualizarProgresso();
         });
-
-
     </script>
 
 </body>

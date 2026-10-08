@@ -1,14 +1,13 @@
 {
   "name": "ellencocheck",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
-  "description": "EllencoCheck com Supabase",
+  "description": "EllencoCheck - inspeções de equipamentos com Supabase e relatório em PDF",
   "scripts": {
-    "start": "npx serve .",
-    "dev": "npx serve ."
+    "start": "serve .",
+    "dev": "serve ."
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.0.0",
     "serve": "^14.2.4"
   }
 }

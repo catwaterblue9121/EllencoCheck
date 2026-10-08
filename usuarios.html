@@ -1,113 +1,325 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Usuários - EllencoCheck</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase-config.js"></script>
+    <meta charset="UTF-8">
+    <script src="./ellenco-theme.js"></script>
+    <script src="./ellenco-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - EllencoCheck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <link rel="stylesheet" href="./ellenco-theme.css">
+    <style>
+        /* Telas pequenas: a tabela vira uma lista de cartões (sem rolagem lateral) */
+        @media (max-width: 767px) {
+            #tabelaUsuarios thead { display: none; }
+            #tabelaUsuarios,
+            #tabelaUsuarios tbody,
+            #tabelaUsuarios tr,
+            #tabelaUsuarios td { display: block; width: 100%; }
+            #tabelaUsuarios tr { padding: .75rem 1rem; }
+            #tabelaUsuarios td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: .3rem 0 !important;
+                text-align: right;
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+            #tabelaUsuarios td::before {
+                content: attr(data-label);
+                flex-shrink: 0;
+                font-size: .7rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .04em;
+                color: #64748b;
+                text-align: left;
+            }
+            #tabelaUsuarios td[data-label="ID"] { display: none; }
+            #tabelaUsuarios td[data-label="Ações"] { justify-content: flex-end; padding-top: .6rem !important; }
+            #tabelaUsuarios td[data-label="Ações"]::before { display: none; }
+            #tabelaUsuarios td[data-label="Ações"] button { padding: .5rem .25rem; }
+        }
+    </style>
 </head>
+
 <body class="bg-slate-100 min-h-screen text-slate-800">
-<header class="bg-[#113A6E] text-white px-6 py-4 flex items-center justify-between">
-  <div>
-    <h1 class="text-2xl font-bold">Usuários</h1>
-    <p class="text-sm opacity-80">Gerenciamento de usuários do EllencoCheck</p>
-  </div>
-  <a href="./index.html" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg">Voltar</a>
-</header>
+    <header class="bg-[#113A6E] text-white px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 border-b-4 border-[#EE3237]">
+        <div class="min-w-0">
+            <h1 class="text-xl sm:text-2xl font-black italic">Usuários</h1>
+            <p class="hidden sm:block text-sm opacity-80">Gerenciamento de usuários do EllencoCheck</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <a href="./historico.html" class="bg-white/10 hover:bg-white/20 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold">Histórico</a>
+            <a href="./index.html" class="bg-white/10 hover:bg-white/20 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold">Voltar</a>
+        </div>
+    </header>
 
-<main class="max-w-6xl mx-auto p-6">
-  <section class="bg-white rounded-2xl shadow-sm p-6 mb-6">
-    <h2 class="font-bold text-lg mb-4">Cadastrar usuário</h2>
-    <form id="formUsuario" class="grid md:grid-cols-4 gap-4">
-      <input id="nome" required placeholder="Nome completo" class="border rounded-lg px-4 py-3">
-      <input id="email" required type="email" placeholder="E-mail" class="border rounded-lg px-4 py-3">
-      <input id="senha" required minlength="6" type="password" placeholder="Senha (mín. 6)" class="border rounded-lg px-4 py-3">
-      <button class="bg-[#113A6E] text-white rounded-lg font-bold px-4 py-3 hover:opacity-90">Cadastrar</button>
-    </form>
-    <p id="mensagem" class="mt-4 text-sm hidden"></p>
-  </section>
+    <main class="max-w-6xl mx-auto p-4 sm:p-6">
+        <section class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 mb-6 border-t-4 border-t-[#EE3237]">
+            <h2 class="font-bold text-lg mb-4 text-[#113A6E]">Cadastrar usuário</h2>
+            <form id="formUsuario" class="grid sm:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+                <input id="nome" required placeholder="Nome completo" class="border rounded-lg px-4 py-3">
+                <input id="email" required type="email" placeholder="E-mail" class="border rounded-lg px-4 py-3">
+                <input id="senha" required minlength="6" type="password" placeholder="Senha (mín. 6)" autocomplete="new-password"
+                    class="border rounded-lg px-4 py-3">
+                <select id="funcao" class="border rounded-lg px-4 py-3 bg-white">
+                    <option value="user">Usuário</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <button id="btnCadastrar" class="sm:col-span-2 md:col-span-1 bg-[#113A6E] text-white rounded-lg font-bold px-4 py-3 hover:opacity-90 disabled:opacity-60">Cadastrar</button>
+            </form>
+            <p id="mensagem" class="mt-4 text-sm hidden"></p>
+        </section>
 
-  <section class="bg-white rounded-2xl shadow-sm overflow-hidden">
-    <div class="p-6 border-b flex items-center justify-between">
-      <h2 class="font-bold text-lg">Usuários cadastrados</h2>
-      <button onclick="carregarUsuarios()" class="border rounded-lg px-4 py-2 hover:bg-slate-50">Atualizar</button>
+        <section class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-4 sm:p-6 border-b flex items-center justify-between gap-3">
+                <h2 class="font-bold text-lg text-[#113A6E]">Usuários cadastrados</h2>
+                <button onclick="carregarUsuarios()" class="border rounded-lg px-4 py-2 hover:bg-slate-50">Atualizar</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="tabelaUsuarios" class="w-full text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="text-left px-6 py-4">ID</th>
+                            <th class="text-left px-6 py-4">Nome</th>
+                            <th class="text-left px-6 py-4">E-mail</th>
+                            <th class="text-left px-6 py-4">Função</th>
+                            <th class="text-left px-6 py-4">Status</th>
+                            <th class="text-right px-6 py-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DE EDIÇÃO -->
+    <div id="modalEditar" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+        <form id="formEditar" class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto">
+            <div class="bg-[#113A6E] text-white px-6 py-4">
+                <h3 class="font-black italic text-lg">Editar usuário</h3>
+                <p id="editEmail" class="text-xs opacity-80 break-all"></p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label for="editNome" class="block text-xs font-bold uppercase text-slate-500 mb-1">Nome</label>
+                    <input id="editNome" required class="w-full border rounded-lg px-4 py-3">
+                </div>
+                <div>
+                    <label for="editFuncao" class="block text-xs font-bold uppercase text-slate-500 mb-1">Função</label>
+                    <select id="editFuncao" class="w-full border rounded-lg px-4 py-3 bg-white">
+                        <option value="user">Usuário</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <label class="flex items-center gap-3 text-sm font-semibold">
+                    <input id="editAtivo" type="checkbox" class="w-5 h-5">
+                    Conta ativa (pode entrar no sistema)
+                </label>
+                <p id="editAviso" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-3">
+                    Você não pode remover sua própria função de administrador nem desativar a própria conta.
+                </p>
+            </div>
+            <div class="px-6 pb-6 flex gap-3 justify-end">
+                <button type="button" onclick="fecharModal()" class="border rounded-lg px-4 py-2 hover:bg-slate-50">Cancelar</button>
+                <button class="bg-[#113A6E] text-white rounded-lg font-bold px-5 py-2 hover:opacity-90">Salvar</button>
+            </div>
+        </form>
     </div>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead class="bg-slate-50">
-          <tr>
-            <th class="text-left px-6 py-4">ID</th>
-            <th class="text-left px-6 py-4">Nome</th>
-            <th class="text-left px-6 py-4">E-mail</th>
-            <th class="text-left px-6 py-4">Status</th>
-            <th class="text-right px-6 py-4">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="lista"></tbody>
-      </table>
-    </div>
-  </section>
-</main>
 
-<script>
-const sb=window.ellencoSupabase;
-function mostrar(msg, erro=false){
- const el=document.getElementById("mensagem");
- el.textContent=msg; el.className="mt-4 text-sm "+(erro?"text-red-600":"text-emerald-600");
-}
-async function exigirAdmin(){
- const {data:{user}}=await sb.auth.getUser();
- if(!user){location.href="./login.html";return null;}
- const {data:p,error}=await sb.from("profiles").select("id,nome,email,ativo,role").eq("id",user.id).single();
- if(error||!p||!p.ativo){await sb.auth.signOut();location.href="./login.html";return null;}
- if(p.role!=="admin"){alert("Acesso restrito a administradores.");location.href="./index.html";return null;}
- return p;
-}
-async function carregarUsuarios(){
- const me=await exigirAdmin(); if(!me)return;
- const {data:usuarios,error}=await sb.from("profiles").select("id,nome,email,ativo,role,criado_em").order("criado_em");
- if(error)return mostrar(error.message,true);
- const lista=document.getElementById("lista"); lista.innerHTML="";
- (usuarios||[]).forEach(u=>{
-   const tr=document.createElement("tr"); tr.className="border-t";
-   tr.innerHTML=`<td class="px-6 py-4">${escapeHtml(u.id)}</td>
-   <td class="px-6 py-4 font-medium">${escapeHtml(u.nome)}</td>
-   <td class="px-6 py-4">${escapeHtml(u.email)}</td>
-   <td class="px-6 py-4">${u.role==="admin"?"Administrador":"Usuário"}</td>
-   <td class="px-6 py-4">${u.ativo?"Ativo":"Inativo"}</td>
-   <td class="px-6 py-4 text-right">
-   <button onclick="editar('${u.id}',${JSON.stringify(u.nome)},${JSON.stringify(u.email)},${u.ativo})" class="text-[#113A6E] font-bold mr-3">Editar</button>
-   ${u.id!==me.id?`<button onclick="excluir('${u.id}')" class="text-red-600 font-bold">Desativar</button>`:""}
-   </td>`;
-   lista.appendChild(tr);
- });
-}
-async function cadastrar(e){
- e.preventDefault();
- const nome=document.getElementById("nome").value.trim(), email=document.getElementById("email").value.trim().toLowerCase(), senha=document.getElementById("senha").value;
- if(senha.length<6)return mostrar("A senha deve ter pelo menos 6 caracteres.",true);
- const {data,error}=await sb.auth.signUp({email,password:senha,options:{data:{nome},emailRedirectTo:location.href}});
- if(error)return mostrar(error.message,true);
- mostrar(data.session?"Usuário cadastrado com sucesso!":"Usuário criado. Se a confirmação de e-mail estiver ativa, ele precisará confirmar o endereço.");
- e.target.reset(); setTimeout(carregarUsuarios,500);
-}
-async function editar(id,nomeAtual,emailAtual,ativoAtual){
- const nome=prompt("Nome:",nomeAtual); if(nome===null)return;
- const {error}=await sb.from("profiles").update({nome:nome.trim(),ativo:ativoAtual}).eq("id",id);
- if(error)return alert(error.message);
- carregarUsuarios();
-}
-async function excluir(id){
- if(!confirm("Desativar este usuário?"))return;
- const {error}=await sb.from("profiles").update({ativo:false}).eq("id",id);
- if(error)return alert(error.message);
- carregarUsuarios();
-}
-function escapeHtml(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-document.getElementById("formUsuario").addEventListener("submit",cadastrar);
-carregarUsuarios();
-</script>
+    <script>
+        const sb = window.ellencoSupabase;
+        let euMesmo = null;
+        let usuariosCache = [];
+        let editandoId = null;
+
+        function mostrar(msg, erro = false) {
+            const el = document.getElementById("mensagem");
+            el.textContent = msg;
+            el.className = "mt-4 text-sm " + (erro ? "text-red-600" : "text-emerald-600");
+        }
+
+        function escapeHtml(v) {
+            return String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        async function exigirAdmin() {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) { location.replace("./login.html"); return null; }
+
+            const { data: p, error } = await sb.from("profiles")
+                .select("id,nome,email,ativo,role").eq("id", user.id).single();
+            if (error || !p || !p.ativo) {
+                await sb.auth.signOut();
+                location.replace("./login.html");
+                return null;
+            }
+            if (p.role !== "admin") {
+                alert("Acesso restrito a administradores.");
+                location.href = "./index.html";
+                return null;
+            }
+            return p;
+        }
+
+        async function carregarUsuarios() {
+            if (!euMesmo) euMesmo = await exigirAdmin();
+            if (!euMesmo) return;
+            window.ellencoLiberarPagina && window.ellencoLiberarPagina();
+
+            const { data: usuarios, error } = await sb.from("profiles")
+                .select("id,nome,email,ativo,role,criado_em").order("criado_em");
+            if (error) return mostrar(error.message, true);
+
+            usuariosCache = usuarios || [];
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
+
+            usuariosCache.forEach(u => {
+                const tr = document.createElement("tr");
+                tr.className = "border-t";
+                const ehEu = u.id === euMesmo.id;
+                tr.innerHTML = `
+                    <td data-label="ID" class="px-6 py-4 text-xs text-slate-400 font-mono" title="${escapeHtml(u.id)}">${escapeHtml(u.id.slice(0, 8))}…</td>
+                    <td data-label="Nome" class="px-6 py-4 font-medium">${escapeHtml(u.nome)}${ehEu ? ' <span class="text-xs text-slate-400">(você)</span>' : ""}</td>
+                    <td data-label="E-mail" class="px-6 py-4">${escapeHtml(u.email)}</td>
+                    <td data-label="Função" class="px-6 py-4">${u.role === "admin" ? "Administrador" : "Usuário"}</td>
+                    <td data-label="Status" class="px-6 py-4">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${u.ativo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}">
+                            ${u.ativo ? "Ativo" : "Inativo"}
+                        </span>
+                    </td>
+                    <td data-label="Ações" class="px-6 py-4 text-right whitespace-nowrap">
+                        <button data-acao="editar" class="text-[#113A6E] font-bold mr-3">Editar</button>
+                        ${ehEu ? "" : (u.ativo
+                            ? '<button data-acao="desativar" class="text-red-600 font-bold">Desativar</button>'
+                            : '<button data-acao="reativar" class="text-emerald-600 font-bold">Reativar</button>')}
+                    </td>`;
+
+                // Sem onclick inline: nomes/e-mails com aspas não quebram mais o HTML
+                tr.querySelector('[data-acao="editar"]').addEventListener("click", () => abrirModal(u));
+                tr.querySelector('[data-acao="desativar"]')?.addEventListener("click", () => alterarAtivo(u, false));
+                tr.querySelector('[data-acao="reativar"]')?.addEventListener("click", () => alterarAtivo(u, true));
+                lista.appendChild(tr);
+            });
+        }
+
+        /* Cliente separado, sem sessão persistida: criar um usuário NÃO troca a sessão do administrador */
+        function clienteCadastro() {
+            return supabase.createClient(window.ELLENCO_SUPABASE_URL, window.ELLENCO_SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false,
+                    detectSessionInUrl: false,
+                    storageKey: "ellenco-cadastro-temporario"
+                }
+            });
+        }
+
+        async function cadastrar(e) {
+            e.preventDefault();
+            const nome = document.getElementById("nome").value.trim();
+            const email = document.getElementById("email").value.trim().toLowerCase();
+            const senha = document.getElementById("senha").value;
+            const funcao = document.getElementById("funcao").value;
+            const btn = document.getElementById("btnCadastrar");
+
+            if (!nome) return mostrar("Informe o nome.", true);
+            if (senha.length < 6) return mostrar("A senha deve ter pelo menos 6 caracteres.", true);
+
+            btn.disabled = true;
+            try {
+                const { data, error } = await clienteCadastro().auth.signUp({
+                    email,
+                    password: senha,
+                    options: {
+                        data: { nome },
+                        emailRedirectTo: new URL("./login.html", location.href).href
+                    }
+                });
+                if (error) throw error;
+
+                // e-mail já cadastrado: o Supabase devolve um usuário "falso" sem identidades
+                if (!data.user || (data.user.identities && data.user.identities.length === 0)) {
+                    throw new Error("Este e-mail já está cadastrado.");
+                }
+
+                if (funcao === "admin") {
+                    const { error: roleError } = await sb.from("profiles").update({ role: "admin" }).eq("id", data.user.id);
+                    if (roleError) throw new Error("Usuário criado, mas não foi possível definir como administrador: " + roleError.message);
+                }
+
+                mostrar(data.session
+                    ? "Usuário cadastrado com sucesso!"
+                    : "Usuário criado. Se a confirmação de e-mail estiver ativa, ele precisará confirmar o endereço antes de entrar.");
+                e.target.reset();
+                carregarUsuarios();
+            } catch (err) {
+                mostrar(err.message || "Não foi possível cadastrar o usuário.", true);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function abrirModal(u) {
+            editandoId = u.id;
+            document.getElementById("editEmail").textContent = u.email;
+            document.getElementById("editNome").value = u.nome;
+            document.getElementById("editFuncao").value = u.role;
+            document.getElementById("editAtivo").checked = !!u.ativo;
+
+            const ehEu = u.id === euMesmo.id;
+            document.getElementById("editFuncao").disabled = ehEu;
+            document.getElementById("editAtivo").disabled = ehEu;
+            document.getElementById("editAviso").classList.toggle("hidden", !ehEu);
+            document.getElementById("modalEditar").classList.remove("hidden");
+            document.getElementById("editNome").focus();
+        }
+
+        function fecharModal() {
+            document.getElementById("modalEditar").classList.add("hidden");
+            editandoId = null;
+        }
+
+        async function salvarEdicao(e) {
+            e.preventDefault();
+            if (!editandoId) return;
+
+            const ehEu = editandoId === euMesmo.id;
+            const atualizacao = { nome: document.getElementById("editNome").value.trim() };
+            if (!atualizacao.nome) return alert("Informe o nome.");
+            if (!ehEu) {
+                atualizacao.role = document.getElementById("editFuncao").value;
+                atualizacao.ativo = document.getElementById("editAtivo").checked;
+            }
+
+            const { error } = await sb.from("profiles").update(atualizacao).eq("id", editandoId);
+            if (error) return alert(error.message);
+            fecharModal();
+            carregarUsuarios();
+        }
+
+        async function alterarAtivo(u, ativo) {
+            if (!confirm(ativo ? `Reativar ${u.nome}?` : `Desativar ${u.nome}? Ele não conseguirá mais entrar no sistema.`)) return;
+            const { error } = await sb.from("profiles").update({ ativo }).eq("id", u.id);
+            if (error) return alert(error.message);
+            carregarUsuarios();
+        }
+
+        document.getElementById("formUsuario").addEventListener("submit", cadastrar);
+        document.getElementById("formEditar").addEventListener("submit", salvarEdicao);
+        document.getElementById("modalEditar").addEventListener("click", e => { if (e.target.id === "modalEditar") fecharModal(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
+
+        carregarUsuarios();
+    </script>
 </body>
+
 </html>

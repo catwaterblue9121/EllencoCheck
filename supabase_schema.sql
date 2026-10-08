@@ -1,4 +1,7 @@
 -- EllencoCheck + Supabase
+-- ATENÇÃO: este arquivo é para instalação NOVA (os dados iniciais sobrescrevem equipamentos/itens de ID 1 a 7).
+-- Se o banco já está em uso, execute apenas o supabase_update_v2.sql e depois o supabase_update_v3.sql.
+-- Instalação nova: execute este arquivo e, em seguida, o supabase_update_v3.sql (checklist da empresa).
 -- Execute este arquivo no SQL Editor do seu projeto Supabase.
 -- Depois de criar a primeira conta pelo site, torne-a administradora:
 -- UPDATE public.profiles SET role = 'admin' WHERE email = 'seu@email.com';
@@ -118,10 +121,16 @@ create table if not exists public.respostas_checklist (
     status text not null check (status in ('OK','ATENCAO','PROBLEMA','NAO_APLICAVEL')),
     observacao text,
     foto_nome text,
+    foto_path text,
     respondido_em timestamptz not null default now(),
     unique (checklist_id, item_inspecao_id)
 );
 
+-- Para bancos criados antes da versão com PDF/fotos
+alter table public.respostas_checklist add column if not exists foto_path text;
+
+create index if not exists idx_respostas_checklist on public.respostas_checklist(checklist_id);
+create index if not exists idx_checklists_realizado on public.checklists(realizado_em desc);
 create index if not exists idx_checklists_equipamento on public.checklists(equipamento_id);
 create index if not exists idx_checklists_usuario on public.checklists(usuario_id);
 create index if not exists idx_itens_tipo on public.itens_inspecao(tipo_id);
@@ -151,9 +160,13 @@ security definer
 set search_path = public
 as $$
 begin
-    if not public.is_admin() then
-        if new.role <> old.role or new.ativo <> old.ativo or new.id <> old.id then
-            raise exception 'Somente administradores podem alterar função ou status do usuário.';
+    -- auth.uid() é nulo no SQL Editor e com a service_role: nesses casos a alteração é liberada.
+    if auth.uid() is not null and not public.is_admin() then
+        if new.role <> old.role
+           or new.ativo <> old.ativo
+           or new.id <> old.id
+           or new.email <> old.email then
+            raise exception 'Somente administradores podem alterar função, e-mail ou status do usuário.';
         end if;
     end if;
     return new;
@@ -171,17 +184,39 @@ for update to authenticated
 using (id = auth.uid() or public.is_admin())
 with check (id = auth.uid() or public.is_admin());
 
+-- Leitura: itens/equipamentos desativados continuam visíveis para quem já os usou em uma
+-- inspeção (senão o histórico e o PDF perderiam o nome do equipamento/item).
 drop policy if exists tipos_select on public.tipos_equipamentos;
 create policy tipos_select on public.tipos_equipamentos
-for select to authenticated using (ativo = true or public.is_admin());
+for select to authenticated using (
+    ativo = true or public.is_admin()
+    or exists (
+        select 1 from public.equipamentos e
+        join public.checklists c on c.equipamento_id = e.id
+        where e.tipo_id = tipos_equipamentos.id and c.usuario_id = auth.uid()
+    )
+);
 
 drop policy if exists equipamentos_select on public.equipamentos;
 create policy equipamentos_select on public.equipamentos
-for select to authenticated using (ativo = true or public.is_admin());
+for select to authenticated using (
+    ativo = true or public.is_admin()
+    or exists (
+        select 1 from public.checklists c
+        where c.equipamento_id = equipamentos.id and c.usuario_id = auth.uid()
+    )
+);
 
 drop policy if exists itens_select on public.itens_inspecao;
 create policy itens_select on public.itens_inspecao
-for select to authenticated using (ativo = true or public.is_admin());
+for select to authenticated using (
+    ativo = true or public.is_admin()
+    or exists (
+        select 1 from public.respostas_checklist r
+        join public.checklists c on c.id = r.checklist_id
+        where r.item_inspecao_id = itens_inspecao.id and c.usuario_id = auth.uid()
+    )
+);
 
 drop policy if exists checklists_select on public.checklists;
 create policy checklists_select on public.checklists
@@ -219,6 +254,47 @@ with check (
         where c.id = checklist_id
           and c.usuario_id = auth.uid()
     )
+);
+
+-- Perfis de usuários que já existiam antes do trigger (evita erro "perfil não encontrado")
+insert into public.profiles (id, nome, email)
+select u.id,
+       coalesce(nullif(u.raw_user_meta_data->>'nome',''), split_part(u.email,'@',1)),
+       lower(u.email)
+from auth.users u
+on conflict (id) do nothing;
+
+-- Fotos das avarias (Storage privado). Caminho: <id do usuário>/<arquivo>.jpg
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('inspecao-fotos', 'inspecao-fotos', false, 5242880,
+        array['image/jpeg','image/png','image/webp'])
+on conflict (id) do update set
+    public = false,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists "inspecao_fotos_insert" on storage.objects;
+create policy "inspecao_fotos_insert" on storage.objects
+for insert to authenticated
+with check (
+    bucket_id = 'inspecao-fotos'
+    and (storage.foldername(name))[1] = auth.uid()::text
+);
+
+drop policy if exists "inspecao_fotos_select" on storage.objects;
+create policy "inspecao_fotos_select" on storage.objects
+for select to authenticated
+using (
+    bucket_id = 'inspecao-fotos'
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+);
+
+drop policy if exists "inspecao_fotos_delete" on storage.objects;
+create policy "inspecao_fotos_delete" on storage.objects
+for delete to authenticated
+using (
+    bucket_id = 'inspecao-fotos'
+    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
 );
 
 -- Seeds
