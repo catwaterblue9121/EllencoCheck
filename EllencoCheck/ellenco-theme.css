@@ -1,0 +1,363 @@
+/* EllencoCheck - estilos compartilhados (scrollbar + modo escuro) */
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+}
+
+button,
+select,
+input,
+textarea {
+    font-family: inherit;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #e2e8f0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #64748b;
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* =====================================================
+   MODO ESCURO (classe .dark no <html>, definida por ellenco-theme.js:
+   segue o dispositivo por padrão e respeita a escolha do botão de tema)
+   Paleta cinza neutra:
+     fundo da página  #0c0c0d
+     cartões          #161617
+     campos / realce  #1e1e20
+     bordas           #2e2e32
+===================================================== */
+
+/* ---- variantes dark: do Tailwind (paleta slate, azulada) -> cinza neutro.
+      Ficam ANTES das regras base para que estas vençam quando o
+      elemento tiver as duas classes. ---- */
+.dark .dark\:bg-slate-700 { background-color: #2a2a2e !important; }
+.dark .dark\:bg-slate-800 { background-color: #1e1e20 !important; }
+.dark .dark\:bg-slate-900 { background-color: #161617 !important; }
+.dark .dark\:bg-slate-800\/50 { background-color: rgb(30 30 32 / 0.5) !important; }
+.dark .dark\:bg-slate-800\/60 { background-color: rgb(30 30 32 / 0.6) !important; }
+.dark .dark\:border-slate-600 { border-color: #3f3f44 !important; }
+.dark .dark\:border-slate-700 { border-color: #2e2e32 !important; }
+.dark .dark\:text-slate-100 { color: #f0f0f2 !important; }
+.dark .dark\:text-slate-200 { color: #e4e4e7 !important; }
+.dark .dark\:text-slate-300 { color: #c4c4ca !important; }
+.dark .dark\:hover\:bg-slate-800:hover { background-color: #232326 !important; }
+.dark .dark\:focus\:bg-slate-700:focus { background-color: #232326 !important; }
+
+/* ---- fundo e texto geral ---- */
+.dark body {
+    background: #0c0c0d;
+    color: #ececee;
+}
+
+.dark body.bg-slate-50,
+.dark body.bg-slate-100 {
+    background-color: #0c0c0d !important;
+}
+
+/* borda padrão (as que não têm cor definida) */
+html:where(.dark) *,
+html:where(.dark) ::before,
+html:where(.dark) ::after {
+    border-color: #2e2e32;
+}
+
+/* ---- barra de rolagem ---- */
+.dark ::-webkit-scrollbar-track {
+    background: #0c0c0d;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #3f3f44;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+    background: #55555c;
+}
+
+/* ---- superfícies ---- */
+.dark .bg-white {
+    background-color: #161617 !important;
+}
+
+.dark .bg-white\/95 {
+    background-color: rgb(22 22 23 / 0.95) !important;
+}
+
+.dark .bg-slate-50 {
+    background-color: #1e1e20 !important;
+}
+
+.dark .bg-slate-50\/50 {
+    background-color: rgb(30 30 32 / 0.5) !important;
+}
+
+.dark .bg-slate-50\/60 {
+    background-color: rgb(30 30 32 / 0.6) !important;
+}
+
+.dark .bg-slate-100 {
+    background-color: #26262a !important;
+}
+
+.dark .bg-slate-200 {
+    background-color: #2e2e32 !important;
+}
+
+/* ---- bordas ---- */
+.dark .border-slate-100 {
+    border-color: #2a2a2d !important;
+}
+
+.dark .border-slate-200 {
+    border-color: #2e2e32 !important;
+}
+
+.dark .border-slate-300 {
+    border-color: #3f3f44 !important;
+}
+
+/* ---- textos ---- */
+.dark .text-slate-900 {
+    color: #fafafa !important;
+}
+
+.dark .text-slate-800 {
+    color: #f0f0f2 !important;
+}
+
+.dark .text-slate-700 {
+    color: #e4e4e7 !important;
+}
+
+.dark .text-slate-600 {
+    color: #d0d0d5 !important;
+}
+
+.dark .text-slate-500 {
+    color: #a1a1a9 !important;
+}
+
+.dark .text-slate-400 {
+    color: #8e8e97 !important;
+}
+
+.dark .text-slate-300 {
+    color: #c4c4ca !important;
+}
+
+/* azul da marca nos textos/bordas: versão clara e dessaturada */
+.dark .text-ellenco-blue,
+.dark .text-\[\#113A6E\] {
+    color: #aebfd8 !important;
+}
+
+.dark .border-ellenco-blue {
+    border-color: #aebfd8 !important;
+}
+
+/* ---- campos de formulário ---- */
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea,
+.dark select {
+    color-scheme: dark;
+    background-color: #1e1e20 !important;
+    border-color: #3f3f44 !important;
+    color: #f0f0f2 !important;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]):focus,
+.dark textarea:focus,
+.dark select:focus {
+    border-color: #8296b3 !important;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #6b6b74 !important;
+}
+
+/* ---- hover ---- */
+.dark .hover\:bg-slate-50:hover {
+    background-color: #232326 !important;
+}
+
+.dark .hover\:bg-slate-100:hover {
+    background-color: #2a2a2e !important;
+}
+
+/* ---- lista de resultados da busca ---- */
+.dark #equipamentoResultados {
+    background-color: #161617 !important;
+    border-color: #2e2e32 !important;
+}
+
+.dark #equipamentoResultados button {
+    border-color: #2a2a2d !important;
+}
+
+.dark #equipamentoResultados button:hover {
+    background-color: #1e1e20 !important;
+}
+
+/* ---- status (verde / vermelho / âmbar) ---- */
+.dark .bg-emerald-50 {
+    background-color: rgb(16 185 129 / 0.12) !important;
+}
+
+.dark .border-emerald-200 {
+    border-color: rgb(16 185 129 / 0.35) !important;
+}
+
+.dark .bg-red-50 {
+    background-color: rgb(238 50 55 / 0.12) !important;
+}
+
+.dark .bg-red-50\/40 {
+    background-color: rgb(238 50 55 / 0.08) !important;
+}
+
+.dark .bg-red-50\/50 {
+    background-color: rgb(238 50 55 / 0.1) !important;
+}
+
+.dark .border-red-200 {
+    border-color: rgb(238 50 55 / 0.35) !important;
+}
+
+.dark .border-red-300 {
+    border-color: rgb(238 50 55 / 0.45) !important;
+}
+
+.dark .bg-amber-50 {
+    background-color: rgb(245 158 11 / 0.12) !important;
+}
+
+.dark .border-amber-100 {
+    border-color: rgb(245 158 11 / 0.35) !important;
+}
+
+.dark .text-emerald-700,
+.dark .text-emerald-600 {
+    color: #6ee7b7 !important;
+}
+
+.dark .text-red-700,
+.dark .text-red-600 {
+    color: #fca5a5 !important;
+}
+
+.dark .text-amber-700,
+.dark .text-amber-600 {
+    color: #fcd34d !important;
+}
+
+/* ---- modal de perfil e cartões do checklist ---- */
+.dark #perfilModal .bg-slate-50 {
+    background-color: #1e1e20 !important;
+}
+
+.dark [data-item-id] {
+    background-color: #1e1e20 !important;
+}
+
+
+body,
+header,
+section,
+input,
+textarea,
+button,
+#userMenu,
+#equipamentoResultados,
+#perfilModal {
+    transition:
+        background-color .2s ease,
+        border-color .2s ease,
+        color .2s ease;
+}
+
+.status-button {
+    user-select: none;
+}
+
+/* Botões de status do checklist: estado selecionado.
+   Fica no CSS (com !important) para valer também no modo escuro. */
+button.status-button.status-button[data-selected="ok"] {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+
+button.status-button.status-button[data-selected="problema"] {
+    background-color: #EE3237 !important;
+    border-color: #EE3237 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+
+button.status-button.status-button[data-selected] span {
+    color: #ffffff !important;
+}
+
+/* =====================================================
+   RESPONSIVO (telas pequenas)
+===================================================== */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    overflow-wrap: break-word;
+}
+
+/* remove o atraso/zoom de toque duplo em botões e links */
+button,
+a,
+label,
+select,
+input[type="checkbox"],
+input[type="radio"] {
+    touch-action: manipulation;
+}
+
+/* usa a altura real da tela no celular (barra do navegador) */
+@supports (height: 100dvh) {
+    body.min-h-screen {
+        min-height: 100dvh;
+    }
+}
+
+@media (max-width: 639px) {
+
+    /* o iPhone dá zoom automático ao focar campos com fonte menor que 16px */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}
