@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <script src="./ellenco-theme.js"></script>
+    <script src="./ellenco-guard.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do administrador - EllencoCheck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-config.js"></script>
+    <script src="./ellenco-avatar.js"></script>
+    <link rel="stylesheet" href="./ellenco-theme.css">
+    <style>
+        /* Telas pequenas: a tabela vira uma lista de cartões (sem rolagem lateral) */
+        @media (max-width: 767px) {
+            .tabela-resp thead { display: none; }
+            .tabela-resp,
+            .tabela-resp tbody,
+            .tabela-resp tr,
+            .tabela-resp td { display: block; width: 100%; }
+            .tabela-resp tr { padding: .75rem 1rem; }
+            .tabela-resp td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                padding: .3rem 0 !important;
+                text-align: right;
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+            .tabela-resp td::before {
+                content: attr(data-label);
+                flex-shrink: 0;
+                font-size: .7rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .04em;
+                color: #64748b;
+                text-align: left;
+            }
+            .tabela-resp td[data-label="ID"] { display: none; }
+            .tabela-resp td[data-label="Ações"] { justify-content: flex-end; padding-top: .6rem !important; }
+            .tabela-resp td[data-label="Ações"]::before { display: none; }
+            .tabela-resp td[data-label="Ações"] button { padding: .5rem .25rem; }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-100 min-h-screen text-slate-800">
+    <header class="bg-[#113A6E] text-white px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 border-b-4 border-[#EE3237]">
+        <div class="min-w-0">
+            <h1 class="text-xl sm:text-2xl font-black italic">Painel do administrador</h1>
+            <p class="hidden sm:block text-sm opacity-80">Veículos, usuários e fotos de perfil</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <a href="./historico.html" class="bg-white/10 hover:bg-white/20 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold">Histórico</a>
+            <a href="./index.html" class="bg-white/10 hover:bg-white/20 px-3 sm:px-4 py-2 rounded-lg text-sm font-semibold">Voltar</a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-4 sm:p-6">
+        <div class="flex gap-2 mb-6">
+            <button id="abaVeiculos" type="button" onclick="mostrarAba('veiculos')" class="px-5 py-2.5 rounded-xl text-sm font-bold">Veículos</button>
+            <button id="abaUsuarios" type="button" onclick="mostrarAba('usuarios')" class="px-5 py-2.5 rounded-xl text-sm font-bold">Usuários</button>
+        </div>
+
+        <div id="painelVeiculos">
+            <section class="bg-white rounded-2xl shadow-sm overflow-hidden border-t-4 border-t-[#EE3237]">
+                <div class="p-4 sm:p-6 border-b flex flex-wrap items-center justify-between gap-3">
+                    <h2 class="font-bold text-lg text-[#113A6E]">Veículos e equipamentos</h2>
+                    <button type="button" onclick="abrirVeiculo(null)" class="bg-[#113A6E] text-white rounded-lg font-bold px-4 py-2 hover:opacity-90">+ Novo veículo</button>
+                </div>
+                <div class="p-4 sm:px-6 border-b grid sm:grid-cols-3 gap-3">
+                    <input id="vBusca" placeholder="Buscar por nome, prefixo, placa ou patrimônio" class="sm:col-span-2 border rounded-lg px-4 py-2.5">
+                    <select id="vFiltro" class="border rounded-lg px-4 py-2.5 bg-white">
+                        <option value="ativos">Somente ativos</option>
+                        <option value="inativos">Somente inativos</option>
+                        <option value="todos">Todos</option>
+                    </select>
+                </div>
+                <p id="msgVeiculo" class="px-6 pt-4 text-sm hidden"></p>
+                <div class="overflow-x-auto">
+                    <table class="tabela-resp w-full text-sm">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="text-left px-6 py-4">Veículo</th>
+                                <th class="text-left px-6 py-4">Prefixo / Placa</th>
+                                <th class="text-left px-6 py-4">Patrimônio</th>
+                                <th class="text-left px-6 py-4">Horímetro</th>
+                                <th class="text-left px-6 py-4">Status</th>
+                                <th class="text-right px-6 py-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="listaVeiculos"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <div id="painelUsuarios" class="hidden">
+        <section class="bg-white rounded-2xl shadow-sm p-4 sm:p-6 mb-6 border-t-4 border-t-[#EE3237]">
+            <h2 class="font-bold text-lg mb-4 text-[#113A6E]">Cadastrar usuário</h2>
+            <form id="formUsuario" class="grid sm:grid-cols-2 md:grid-cols-5 gap-3 sm:gap-4">
+                <input id="nome" required placeholder="Nome completo" class="border rounded-lg px-4 py-3">
+                <input id="email" required type="email" placeholder="E-mail" class="border rounded-lg px-4 py-3">
+                <input id="senha" required minlength="6" type="password" placeholder="Senha (mín. 6)" autocomplete="new-password"
+                    class="border rounded-lg px-4 py-3">
+                <select id="funcao" class="border rounded-lg px-4 py-3 bg-white">
+                    <option value="user">Usuário</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <button id="btnCadastrar" class="sm:col-span-2 md:col-span-1 bg-[#113A6E] text-white rounded-lg font-bold px-4 py-3 hover:opacity-90 disabled:opacity-60">Cadastrar</button>
+            </form>
+            <p id="mensagem" class="mt-4 text-sm hidden"></p>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-4 sm:p-6 border-b flex items-center justify-between gap-3">
+                <h2 class="font-bold text-lg text-[#113A6E]">Usuários cadastrados</h2>
+                <button onclick="carregarUsuarios()" class="border rounded-lg px-4 py-2 hover:bg-slate-50">Atualizar</button>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="tabelaUsuarios" class="tabela-resp w-full text-sm">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="text-left px-6 py-4">ID</th>
+                            <th class="text-left px-6 py-4">Nome</th>
+                            <th class="text-left px-6 py-4">E-mail</th>
+                            <th class="text-left px-6 py-4">Função</th>
+                            <th class="text-left px-6 py-4">Status</th>
+                            <th class="text-right px-6 py-4">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista"></tbody>
+                </table>
+            </div>
+        </section>
+        </div>
+    </main>
+
+    <!-- MODAL DE EDIÇÃO -->
+    <div id="modalEditar" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+        <form id="formEditar" class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto">
+            <div class="bg-[#113A6E] text-white px-6 py-4">
+                <h3 class="font-black italic text-lg">Editar usuário</h3>
+                <p id="editEmail" class="text-xs opacity-80 break-all"></p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center gap-4">
+                    <span id="editAvatar" class="w-16 h-16 rounded-full bg-[#113A6E] text-white flex items-center justify-center text-2xl font-black shrink-0"></span>
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap gap-2">
+                            <label class="px-3 py-2 rounded-lg bg-[#113A6E] text-white text-xs font-bold cursor-pointer hover:opacity-90">Alterar foto<input id="editAvatarInput" type="file" accept="image/*" class="hidden"></label>
+                            <button id="editAvatarRemover" type="button" class="hidden px-3 py-2 rounded-lg border text-xs font-bold text-slate-500 hover:bg-slate-50">Remover</button>
+                        </div>
+                        <p id="editAvatarMsg" class="text-xs mt-1.5 min-h-[1rem]"></p>
+                    </div>
+                </div>
+                <div>
+                    <label for="editNome" class="block text-xs font-bold uppercase text-slate-500 mb-1">Nome</label>
+                    <input id="editNome" required class="w-full border rounded-lg px-4 py-3">
+                </div>
+                <div>
+                    <label for="editFuncao" class="block text-xs font-bold uppercase text-slate-500 mb-1">Função</label>
+                    <select id="editFuncao" class="w-full border rounded-lg px-4 py-3 bg-white">
+                        <option value="user">Usuário</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <label class="flex items-center gap-3 text-sm font-semibold">
+                    <input id="editAtivo" type="checkbox" class="w-5 h-5">
+                    Conta ativa (pode entrar no sistema)
+                </label>
+                <p id="editAviso" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-3">
+                    Você não pode remover sua própria função de administrador nem desativar a própria conta.
+                </p>
+            </div>
+            <div class="px-6 pb-6 flex gap-3 justify-end">
+                <button type="button" onclick="fecharModal()" class="border rounded-lg px-4 py-2 hover:bg-slate-50">Cancelar</button>
+                <button class="bg-[#113A6E] text-white rounded-lg font-bold px-5 py-2 hover:opacity-90">Salvar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL DE VEÍCULO -->
+    <div id="modalVeiculo" class="hidden fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+        <form id="formVeiculo" class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[calc(100dvh-2rem)] overflow-y-auto">
+            <div class="bg-[#113A6E] text-white px-6 py-4">
+                <h3 id="vTitulo" class="font-black italic text-lg">Novo veículo</h3>
+            </div>
+            <div class="p-6 grid sm:grid-cols-2 gap-4">
+                <div><label for="vTipo" class="block text-xs font-bold uppercase text-slate-500 mb-1">Tipo *</label><select id="vTipo" required class="w-full border rounded-lg px-4 py-3 bg-white"></select></div>
+                <div><label for="vNome" class="block text-xs font-bold uppercase text-slate-500 mb-1">Nome *</label><input id="vNome" required class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vPrefixo" class="block text-xs font-bold uppercase text-slate-500 mb-1">Prefixo</label><input id="vPrefixo" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vPlaca" class="block text-xs font-bold uppercase text-slate-500 mb-1">Placa</label><input id="vPlaca" maxlength="8" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vPatrimonio" class="block text-xs font-bold uppercase text-slate-500 mb-1">Patrimônio</label><input id="vPatrimonio" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vHorimetro" class="block text-xs font-bold uppercase text-slate-500 mb-1">Horímetro atual (h)</label><input id="vHorimetro" type="number" step="0.1" min="0" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vModelo" class="block text-xs font-bold uppercase text-slate-500 mb-1">Modelo</label><input id="vModelo" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vFabricante" class="block text-xs font-bold uppercase text-slate-500 mb-1">Fabricante</label><input id="vFabricante" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vAno" class="block text-xs font-bold uppercase text-slate-500 mb-1">Ano</label><input id="vAno" type="number" min="1950" max="2100" class="w-full border rounded-lg px-4 py-3"></div>
+                <div><label for="vStatus" class="block text-xs font-bold uppercase text-slate-500 mb-1">Situação</label>
+                    <select id="vStatus" class="w-full border rounded-lg px-4 py-3 bg-white">
+                        <option value="ATIVO">Ativo</option>
+                        <option value="MANUTENCAO">Em manutenção</option>
+                        <option value="INATIVO">Inativo</option>
+                    </select></div>
+                <div class="sm:col-span-2"><label for="vObs" class="block text-xs font-bold uppercase text-slate-500 mb-1">Observações</label><textarea id="vObs" rows="2" class="w-full border rounded-lg px-4 py-3"></textarea></div>
+                <label class="sm:col-span-2 flex items-center gap-3 text-sm font-semibold">
+                    <input id="vAtivo" type="checkbox" class="w-5 h-5"> Disponível para inspeção (desmarque para ocultar do checklist)
+                </label>
+                <p id="vErro" class="sm:col-span-2 text-sm text-red-600 hidden"></p>
+            </div>
+            <div class="px-6 pb-6 flex gap-3 justify-end">
+                <button type="button" onclick="fecharVeiculo()" class="border rounded-lg px-4 py-2 hover:bg-slate-50">Cancelar</button>
+                <button id="vSalvar" class="bg-[#113A6E] text-white rounded-lg font-bold px-5 py-2 hover:opacity-90 disabled:opacity-60">Salvar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const sb = window.ellencoSupabase;
+        let euMesmo = null;
+        let usuariosCache = [];
+        let editandoId = null;
+
+        function mostrar(msg, erro = false) {
+            const el = document.getElementById("mensagem");
+            el.textContent = msg;
+            el.className = "mt-4 text-sm " + (erro ? "text-red-600" : "text-emerald-600");
+        }
+
+        function escapeHtml(v) {
+            return String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        async function exigirAdmin() {
+            const { data: { user } } = await sb.auth.getUser();
+            if (!user) { location.replace("./login.html"); return null; }
+
+            const { data: p, error } = await sb.from("profiles")
+                .select("id,nome,email,ativo,role").eq("id", user.id).single();
+            if (error || !p || !p.ativo) {
+                await sb.auth.signOut();
+                location.replace("./login.html");
+                return null;
+            }
+            if (p.role !== "admin") {
+                alert("Acesso restrito a administradores.");
+                location.href = "./index.html";
+                return null;
+            }
+            return p;
+        }
+
+        async function carregarUsuarios() {
+            if (!euMesmo) euMesmo = await exigirAdmin();
+            if (!euMesmo) return;
+            window.ellencoLiberarPagina && window.ellencoLiberarPagina();
+
+            let { data: usuarios, error } = await sb.from("profiles")
+                .select("id,nome,email,ativo,role,criado_em,avatar_path").order("criado_em");
+            if (error) {   // banco sem o v5 (coluna avatar_path ainda não existe)
+                ({ data: usuarios, error } = await sb.from("profiles")
+                    .select("id,nome,email,ativo,role,criado_em").order("criado_em"));
+            }
+            if (error) return mostrar(error.message, true);
+
+            usuariosCache = usuarios || [];
+            const lista = document.getElementById("lista");
+            lista.innerHTML = "";
+
+            usuariosCache.forEach(u => {
+                const tr = document.createElement("tr");
+                tr.className = "border-t";
+                const ehEu = u.id === euMesmo.id;
+                tr.innerHTML = `
+                    <td data-label="ID" class="px-6 py-4 text-xs text-slate-400 font-mono" title="${escapeHtml(u.id)}">${escapeHtml(u.id.slice(0, 8))}…</td>
+                    <td data-label="Nome" class="px-6 py-4 font-medium"><div class="flex items-center gap-3 min-w-0"><span data-av class="w-9 h-9 rounded-full bg-[#113A6E] text-white flex items-center justify-center text-sm font-black shrink-0"></span><span>${escapeHtml(u.nome)}${ehEu ? ' <span class="text-xs text-slate-400">(você)</span>' : ""}</span></div></td>
+                    <td data-label="E-mail" class="px-6 py-4">${escapeHtml(u.email)}</td>
+                    <td data-label="Função" class="px-6 py-4">${u.role === "admin" ? "Administrador" : "Usuário"}</td>
+                    <td data-label="Status" class="px-6 py-4">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold ${u.ativo ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}">
+                            ${u.ativo ? "Ativo" : "Inativo"}
+                        </span>
+                    </td>
+                    <td data-label="Ações" class="px-6 py-4 text-right whitespace-nowrap">
+                        <button data-acao="editar" class="text-[#113A6E] font-bold mr-3">Editar</button>
+                        ${ehEu ? "" : (u.ativo
+                            ? '<button data-acao="desativar" class="text-red-600 font-bold">Desativar</button>'
+                            : '<button data-acao="reativar" class="text-emerald-600 font-bold">Reativar</button>')}
+                    </td>`;
+
+                // Sem onclick inline: nomes/e-mails com aspas não quebram mais o HTML
+                tr.querySelector('[data-acao="editar"]').addEventListener("click", () => abrirModal(u));
+                tr.querySelector('[data-acao="desativar"]')?.addEventListener("click", () => alterarAtivo(u, false));
+                tr.querySelector('[data-acao="reativar"]')?.addEventListener("click", () => alterarAtivo(u, true));
+                window.EllencoAvatar.pintar(sb, tr.querySelector("[data-av]"), u.nome, u.avatar_path);
+                lista.appendChild(tr);
+            });
+        }
+
+        /* Cliente separado, sem sessão persistida: criar um usuário NÃO troca a sessão do administrador */
+        function clienteCadastro() {
+            return supabase.createClient(window.ELLENCO_SUPABASE_URL, window.ELLENCO_SUPABASE_ANON_KEY, {
+                auth: {
+                    persistSession: false,
+                    autoRefreshToken: false,
+                    detectSessionInUrl: false,
+                    storageKey: "ellenco-cadastro-temporario"
+                }
+            });
+        }
+
+        async function cadastrar(e) {
+            e.preventDefault();
+            const nome = document.getElementById("nome").value.trim();
+            const email = document.getElementById("email").value.trim().toLowerCase();
+            const senha = document.getElementById("senha").value;
+            const funcao = document.getElementById("funcao").value;
+            const btn = document.getElementById("btnCadastrar");
+
+            if (!nome) return mostrar("Informe o nome.", true);
+            if (senha.length < 6) return mostrar("A senha deve ter pelo menos 6 caracteres.", true);
+
+            btn.disabled = true;
+            try {
+                const { data, error } = await clienteCadastro().auth.signUp({
+                    email,
+                    password: senha,
+                    options: {
+                        data: { nome },
+                        emailRedirectTo: new URL("./login.html", location.href).href
+                    }
+                });
+                if (error) throw error;
+
+                // e-mail já cadastrado: o Supabase devolve um usuário "falso" sem identidades
+                if (!data.user || (data.user.identities && data.user.identities.length === 0)) {
+                    throw new Error("Este e-mail já está cadastrado.");
+                }
+
+                if (funcao === "admin") {
+                    const { error: roleError } = await sb.from("profiles").update({ role: "admin" }).eq("id", data.user.id);
+                    if (roleError) throw new Error("Usuário criado, mas não foi possível definir como administrador: " + roleError.message);
+                }
+
+                mostrar(data.session
+                    ? "Usuário cadastrado com sucesso!"
+                    : "Usuário criado. Se a confirmação de e-mail estiver ativa, ele precisará confirmar o endereço antes de entrar.");
+                e.target.reset();
+                carregarUsuarios();
+            } catch (err) {
+                mostrar(err.message || "Não foi possível cadastrar o usuário.", true);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        let editandoUser = null;
+        function pintarEditAvatar() {
+            window.EllencoAvatar.pintar(sb, document.getElementById("editAvatar"), editandoUser.nome, editandoUser.avatar_path);
+            document.getElementById("editAvatarRemover").classList.toggle("hidden", !editandoUser.avatar_path);
+        }
+        function avisoEditAvatar(t, erro) {
+            const el = document.getElementById("editAvatarMsg");
+            el.textContent = t || "";
+            el.className = "text-xs mt-1.5 min-h-[1rem] font-semibold " + (erro ? "text-red-600" : "text-emerald-600");
+        }
+        document.getElementById("editAvatarInput").addEventListener("change", async (e) => {
+            const arq = e.target.files[0];
+            e.target.value = "";
+            if (!arq || !editandoUser) return;
+            avisoEditAvatar("Enviando foto...", false);
+            try {
+                editandoUser.avatar_path = await EllencoAvatar.enviar(sb, editandoUser.id, arq, editandoUser.avatar_path);
+                pintarEditAvatar(); avisoEditAvatar("Foto atualizada.", false); carregarUsuarios();
+            } catch (err) { avisoEditAvatar(err.message, true); }
+        });
+        document.getElementById("editAvatarRemover").addEventListener("click", async () => {
+            if (!editandoUser?.avatar_path) return;
+            try {
+                await EllencoAvatar.remover(sb, editandoUser.id, editandoUser.avatar_path);
+                editandoUser.avatar_path = null;
+                pintarEditAvatar(); avisoEditAvatar("Foto removida.", false); carregarUsuarios();
+            } catch (err) { avisoEditAvatar(err.message, true); }
+        });
+
+        function abrirModal(u) {
+            editandoUser = u;
+            avisoEditAvatar("", false);
+            pintarEditAvatar();
+            editandoId = u.id;
+            document.getElementById("editEmail").textContent = u.email;
+            document.getElementById("editNome").value = u.nome;
+            document.getElementById("editFuncao").value = u.role;
+            document.getElementById("editAtivo").checked = !!u.ativo;
+
+            const ehEu = u.id === euMesmo.id;
+            document.getElementById("editFuncao").disabled = ehEu;
+            document.getElementById("editAtivo").disabled = ehEu;
+            document.getElementById("editAviso").classList.toggle("hidden", !ehEu);
+            document.getElementById("modalEditar").classList.remove("hidden");
+            document.getElementById("editNome").focus();
+        }
+
+        function fecharModal() {
+            document.getElementById("modalEditar").classList.add("hidden");
+            editandoId = null;
+        }
+
+        async function salvarEdicao(e) {
+            e.preventDefault();
+            if (!editandoId) return;
+
+            const ehEu = editandoId === euMesmo.id;
+            const atualizacao = { nome: document.getElementById("editNome").value.trim() };
+            if (!atualizacao.nome) return alert("Informe o nome.");
+            if (!ehEu) {
+                atualizacao.role = document.getElementById("editFuncao").value;
+                atualizacao.ativo = document.getElementById("editAtivo").checked;
+            }
+
+            const { error } = await sb.from("profiles").update(atualizacao).eq("id", editandoId);
+            if (error) return alert(error.message);
+            fecharModal();
+            carregarUsuarios();
+        }
+
+        async function alterarAtivo(u, ativo) {
+            if (!confirm(ativo ? `Reativar ${u.nome}?` : `Desativar ${u.nome}? Ele não conseguirá mais entrar no sistema.`)) return;
+            const { error } = await sb.from("profiles").update({ ativo }).eq("id", u.id);
+            if (error) return alert(error.message);
+            carregarUsuarios();
+        }
+
+        document.getElementById("formUsuario").addEventListener("submit", cadastrar);
+        document.getElementById("formEditar").addEventListener("submit", salvarEdicao);
+        document.getElementById("modalEditar").addEventListener("click", e => { if (e.target.id === "modalEditar") fecharModal(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") fecharModal(); });
+
+        /* ---------------- ABAS ---------------- */
+        function mostrarAba(nome) {
+            const vei = nome !== "usuarios";
+            document.getElementById("painelVeiculos").classList.toggle("hidden", !vei);
+            document.getElementById("painelUsuarios").classList.toggle("hidden", vei);
+            const on = "px-5 py-2.5 rounded-xl text-sm font-bold bg-[#113A6E] text-white";
+            const off = "px-5 py-2.5 rounded-xl text-sm font-bold bg-white text-[#113A6E] border";
+            document.getElementById("abaVeiculos").className = vei ? on : off;
+            document.getElementById("abaUsuarios").className = vei ? off : on;
+            history.replaceState(null, "", "#" + (vei ? "veiculos" : "usuarios"));
+        }
+
+        /* ---------------- VEÍCULOS ---------------- */
+        let veiculos = [], tipos = [], editandoVeiculo = null;
+        const $ = id => document.getElementById(id);
+
+        function msgVeiculo(t, erro) {
+            const el = $("msgVeiculo");
+            el.textContent = t;
+            el.className = "px-6 pt-4 text-sm " + (erro ? "text-red-600" : "text-emerald-600");
+        }
+
+        async function carregarVeiculos() {
+            if (!euMesmo) return;
+            const [v, t] = await Promise.all([
+                sb.from("equipamentos")
+                    .select("id,tipo_id,nome,prefixo,placa,patrimonio,modelo,fabricante,ano,horimetro,status,observacoes,ativo,tipos_equipamentos(nome)")
+                    .order("nome"),
+                sb.from("tipos_equipamentos").select("id,nome").eq("ativo", true).order("nome")
+            ]);
+            if (v.error) return msgVeiculo("Erro ao carregar veículos: " + v.error.message, true);
+            veiculos = v.data || [];
+            tipos = t.data || [];
+            $("vTipo").innerHTML = tipos.map(x => `<option value="${x.id}">${escapeHtml(x.nome)}</option>`).join("");
+            renderVeiculos();
+        }
+
+        const ROTULO_STATUS = { ATIVO: "Ativo", MANUTENCAO: "Em manutenção", INATIVO: "Inativo" };
+
+        function renderVeiculos() {
+            const q = $("vBusca").value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+            const f = $("vFiltro").value;
+            const lista = $("listaVeiculos");
+            lista.innerHTML = "";
+            const vis = veiculos.filter(v => {
+                if (f === "ativos" && !v.ativo) return false;
+                if (f === "inativos" && v.ativo) return false;
+                const texto = [v.nome, v.prefixo, v.placa, v.patrimonio, v.modelo, v.tipos_equipamentos?.nome].join(" ")
+                    .normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                return !q || texto.includes(q);
+            });
+            if (!vis.length) {
+                lista.innerHTML = '<tr><td colspan="6" class="px-6 py-10 text-center text-slate-400">Nenhum veículo encontrado.</td></tr>';
+                return;
+            }
+            vis.forEach(v => {
+                const tr = document.createElement("tr");
+                tr.className = "border-t" + (v.ativo ? "" : " opacity-60");
+                const st = v.ativo ? (ROTULO_STATUS[v.status] || v.status) : "Oculto";
+                const cor = !v.ativo ? "bg-slate-100 text-slate-500" : v.status === "ATIVO" ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700";
+                tr.innerHTML = `
+                    <td data-label="Veículo" class="px-6 py-4 font-medium">${escapeHtml(v.nome)}<div class="text-xs text-slate-400 font-normal">${escapeHtml(v.tipos_equipamentos?.nome || "")}</div></td>
+                    <td data-label="Prefixo / Placa" class="px-6 py-4">${escapeHtml([v.prefixo, v.placa].filter(Boolean).join(" · ") || "—")}</td>
+                    <td data-label="Patrimônio" class="px-6 py-4">${escapeHtml(v.patrimonio || "—")}</td>
+                    <td data-label="Horímetro" class="px-6 py-4">${Number(v.horimetro || 0).toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 2 })} h</td>
+                    <td data-label="Status" class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${cor}">${st}</span></td>
+                    <td data-label="Ações" class="px-6 py-4 text-right whitespace-nowrap">
+                        <button data-acao="editar" class="text-[#113A6E] font-bold mr-3">Editar</button>
+                        ${v.ativo ? '<button data-acao="ocultar" class="text-red-600 font-bold">Desativar</button>'
+                                  : '<button data-acao="mostrar" class="text-emerald-600 font-bold">Reativar</button>'}
+                    </td>`;
+                tr.querySelector('[data-acao="editar"]').addEventListener("click", () => abrirVeiculo(v));
+                tr.querySelector('[data-acao="ocultar"]')?.addEventListener("click", () => alternarVeiculo(v, false));
+                tr.querySelector('[data-acao="mostrar"]')?.addEventListener("click", () => alternarVeiculo(v, true));
+                lista.appendChild(tr);
+            });
+        }
+
+        function abrirVeiculo(v) {
+            editandoVeiculo = v;
+            $("vTitulo").textContent = v ? "Editar veículo" : "Novo veículo";
+            $("vErro").classList.add("hidden");
+            $("vTipo").value = v ? v.tipo_id : (tipos[0]?.id ?? "");
+            $("vNome").value = v?.nome ?? "";
+            $("vPrefixo").value = v?.prefixo ?? "";
+            $("vPlaca").value = v?.placa ?? "";
+            $("vPatrimonio").value = v?.patrimonio ?? "";
+            $("vHorimetro").value = v?.horimetro ?? 0;
+            $("vModelo").value = v?.modelo ?? "";
+            $("vFabricante").value = v?.fabricante ?? "";
+            $("vAno").value = v?.ano ?? "";
+            $("vStatus").value = v?.status ?? "ATIVO";
+            $("vObs").value = v?.observacoes ?? "";
+            $("vAtivo").checked = v ? !!v.ativo : true;
+            $("modalVeiculo").classList.remove("hidden");
+            $("vNome").focus();
+        }
+        function fecharVeiculo() { $("modalVeiculo").classList.add("hidden"); editandoVeiculo = null; }
+
+        async function salvarVeiculo(e) {
+            e.preventDefault();
+            const vazio = x => (x.trim() === "" ? null : x.trim());
+            const dados = {
+                tipo_id: Number($("vTipo").value),
+                nome: $("vNome").value.trim(),
+                prefixo: vazio($("vPrefixo").value)?.toUpperCase() ?? null,
+                placa: vazio($("vPlaca").value)?.toUpperCase() ?? null,
+                patrimonio: vazio($("vPatrimonio").value),      // único: vazio precisa ser NULL
+                modelo: vazio($("vModelo").value),
+                fabricante: vazio($("vFabricante").value),
+                ano: $("vAno").value ? Number($("vAno").value) : null,
+                horimetro: Number($("vHorimetro").value) || 0,
+                status: $("vStatus").value,
+                observacoes: vazio($("vObs").value),
+                ativo: $("vAtivo").checked
+            };
+            const erroEl = $("vErro");
+            if (!dados.tipo_id || !dados.nome) { erroEl.textContent = "Informe o tipo e o nome."; erroEl.classList.remove("hidden"); return; }
+
+            $("vSalvar").disabled = true;
+            const q = editandoVeiculo
+                ? sb.from("equipamentos").update(dados).eq("id", editandoVeiculo.id)
+                : sb.from("equipamentos").insert(dados);
+            const { error } = await q;
+            $("vSalvar").disabled = false;
+            if (error) {
+                let m = error.message;
+                if (error.code === "23505") m = "Já existe um veículo com este patrimônio.";
+                else if (/row-level security|policy/i.test(m)) m = "sem permissão para alterar veículos. Execute o arquivo supabase_update_v5.sql no SQL Editor do Supabase.";
+                erroEl.textContent = "Não foi possível salvar: " + m;
+                erroEl.classList.remove("hidden");
+                return;
+            }
+            const novo = !editandoVeiculo;
+            fecharVeiculo();
+            msgVeiculo(novo ? "Veículo cadastrado." : "Veículo atualizado.", false);
+            carregarVeiculos();
+        }
+
+        async function alternarVeiculo(v, ativo) {
+            if (!confirm(ativo ? `Reativar ${v.nome}?` : `Desativar ${v.nome}? Ele deixa de aparecer para novas inspeções (o histórico é mantido).`)) return;
+            const { error } = await sb.from("equipamentos").update({ ativo }).eq("id", v.id);
+            if (error) return msgVeiculo("Não foi possível alterar: " + error.message, true);
+            carregarVeiculos();
+        }
+
+        $("formVeiculo").addEventListener("submit", salvarVeiculo);
+        $("vBusca").addEventListener("input", renderVeiculos);
+        $("vFiltro").addEventListener("change", renderVeiculos);
+        $("modalVeiculo").addEventListener("click", e => { if (e.target.id === "modalVeiculo") fecharVeiculo(); });
+        document.addEventListener("keydown", e => { if (e.key === "Escape") fecharVeiculo(); });
+
+        mostrarAba(location.hash === "#usuarios" ? "usuarios" : "veiculos");
+        carregarUsuarios().then(carregarVeiculos);
+    </script>
+</body>
+
+</html>
