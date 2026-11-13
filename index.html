@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="./ellenco-theme.js"></script>
     <script src="./ellenco-guard.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -19,7 +18,6 @@
 
     <script>
         tailwind.config = {
-            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
@@ -33,7 +31,7 @@
         };
     </script>
 
-    <link rel="stylesheet" href="./ellenco-theme.css">
+    <link rel="stylesheet" href="./ellenco-base.css">
 </head>
 
 <body
@@ -79,37 +77,14 @@
 
                     <!-- NAVEGAÇÃO -->
                     <a href="./historico.html"
-                        class="hidden md:inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-ellenco-blue hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                        class="hidden md:inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-slate-200 text-sm font-bold text-ellenco-blue hover:bg-slate-50 transition">
                         Histórico
                     </a>
-
-                    <!-- TEMA -->
-                    <button id="themeToggle" type="button" onclick="alternarTema()" title="Alternar tema"
-                        class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center transition">
-
-                        <svg id="moonIcon" class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-
-                        </svg>
-
-                        <svg id="sunIcon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 16a4 4 0 100-8 4 4 0 000 8z" />
-
-                        </svg>
-
-                    </button>
-
-                    <!-- USUÁRIO -->
+<!-- USUÁRIO -->
                     <div class="relative">
 
                         <button id="userMenuButton" type="button" onclick="toggleUserMenu()"
-                            class="flex items-center gap-2 sm:gap-3 px-1 sm:px-3 py-1 sm:py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer">
+                            class="flex items-center gap-2 sm:gap-3 px-1 sm:px-3 py-1 sm:py-2 rounded-xl hover:bg-slate-50 transition cursor-pointer">
 
                             <div id="userAvatar"
                                 class="w-10 h-10 rounded-full bg-ellenco-blue text-white flex items-center justify-center font-black uppercase">
@@ -118,7 +93,7 @@
 
                             <div class="hidden sm:block text-left">
 
-                                <p id="headerUserName" class="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                <p id="headerUserName" class="text-sm font-bold text-slate-800">
                                     Usuário
                                 </p>
 
@@ -139,15 +114,15 @@
 
                         <!-- MENU -->
                         <div id="userMenu"
-                            class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden z-50">
+                            class="hidden absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-50">
 
-                            <div class="p-4 border-b border-slate-100 dark:border-slate-700">
+                            <div class="p-4 border-b border-slate-100">
 
                                 <p class="text-xs font-bold uppercase tracking-wider text-slate-400">
                                     Conta
                                 </p>
 
-                                <p id="menuUserName" class="font-bold text-slate-800 dark:text-slate-100 mt-1 truncate">
+                                <p id="menuUserName" class="font-bold text-slate-800 mt-1 truncate">
                                     Usuário
                                 </p>
 
@@ -160,19 +135,19 @@
                             <div class="p-2">
 
                                 <a href="./historico.html"
-                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 text-sm font-semibold text-slate-700 transition">
                                     <svg class="w-5 h-5 text-ellenco-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                     Histórico e PDFs
                                 </a>
 
                                 <a id="menuUsuarios" href="./admin.html"
-                                    class="hidden w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    class="hidden w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 text-sm font-semibold text-slate-700 transition">
                                     <svg class="w-5 h-5 text-ellenco-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                                     Painel do administrador
                                 </a>
 
                                 <button type="button" onclick="abrirPerfil()"
-                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-semibold text-slate-700 dark:text-slate-200 transition">
+                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-slate-50 text-sm font-semibold text-slate-700 transition">
 
                                     <svg class="w-5 h-5 text-ellenco-blue" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -187,7 +162,7 @@
                                 </button>
 
                                 <button type="button" onclick="sair()"
-                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-sm font-semibold text-red-600 transition">
+                                    class="w-full flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-red-50 text-sm font-semibold text-red-600 transition">
 
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 
@@ -255,7 +230,7 @@
             </div>
 
             <div
-                class="inline-flex items-center gap-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2 shadow-sm self-start sm:self-auto">
+                class="inline-flex items-center gap-2.5 bg-white border border-slate-200 rounded-xl px-3.5 py-2 shadow-sm self-start sm:self-auto">
 
                 <span class="relative flex h-2.5 w-2.5">
 
@@ -266,7 +241,7 @@
 
                 </span>
 
-                <span class="text-xs font-bold text-slate-600 dark:text-slate-300 tracking-wider uppercase">
+                <span class="text-xs font-bold text-slate-600 tracking-wider uppercase">
                     Sistema Online
                 </span>
 
@@ -280,9 +255,9 @@
         ====================================================== -->
 
         <section
-            class="bg-white dark:bg-slate-900 rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200 dark:border-slate-700 shadow-sm mb-8">
+            class="bg-white rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200 shadow-sm mb-8">
 
-            <div class="px-4 sm:px-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-700 rounded-t-xl">
+            <div class="px-4 sm:px-6 py-4 bg-slate-50/50 border-b border-slate-100 rounded-t-xl">
 
                 <h3 class="font-bold text-ellenco-blue italic uppercase text-lg">
                     Equipamento
@@ -318,12 +293,12 @@
 
                             <input id="equipamentoBusca" type="text" autocomplete="off"
                                 placeholder="Nome, placa, prefixo ou patrimônio..."
-                                class="w-full h-12 pl-12 pr-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 text-sm outline-none focus:bg-white dark:focus:bg-slate-700 focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10 font-medium">
+                                class="w-full h-12 pl-12 pr-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10 font-medium">
 
                         </div>
 
                         <div id="equipamentoResultados"
-                            class="hidden absolute left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden z-40 max-h-80 overflow-y-auto">
+                            class="hidden absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-40 max-h-80 overflow-y-auto">
                         </div>
 
                         <input type="hidden" id="equipamento">
@@ -345,7 +320,7 @@
                             </label>
                             <div class="relative">
                                 <input id="horimetro" type="number" step="0.1" min="0" inputmode="decimal" placeholder="0.0"
-                                    class="w-full h-12 px-4 pr-16 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-bold text-sm outline-none focus:bg-white dark:focus:bg-slate-700 focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
+                                    class="w-full h-12 px-4 pr-16 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
                                 <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold tracking-wider text-slate-400 pointer-events-none">HORAS</span>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-2">Leitura do horímetro antes de iniciar o uso.</p>
@@ -358,7 +333,7 @@
                             </label>
                             <div class="relative">
                                 <input id="horimetroFinal" type="number" step="0.1" min="0" inputmode="decimal" placeholder="0.0"
-                                    class="w-full h-12 px-4 pr-16 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-800 dark:text-slate-100 font-bold text-sm outline-none focus:bg-white dark:focus:bg-slate-700 focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
+                                    class="w-full h-12 px-4 pr-16 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold text-sm outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10">
                                 <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[11px] font-bold tracking-wider text-slate-400 pointer-events-none">HORAS</span>
                             </div>
                             <p class="text-[11px] text-slate-400 mt-2">Opcional agora. Se o uso ainda não terminou, registre depois em Histórico.</p>
@@ -369,7 +344,7 @@
                                 Horas Utilizadas
                             </span>
                             <div id="horasUtilizadas"
-                                class="h-12 px-4 flex items-center bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-300 font-bold text-sm">
+                                class="h-12 px-4 flex items-center bg-slate-100 border border-slate-200 rounded-xl text-slate-500 font-bold text-sm">
                                 —
                             </div>
                             <p class="text-[11px] text-slate-400 mt-2">Final menos inicial, calculado automaticamente.</p>
@@ -382,7 +357,7 @@
 
                 <!-- EQUIPAMENTO SELECIONADO -->
                 <div id="selectedEquipment"
-                    class="hidden mt-5 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                    class="hidden mt-5 p-4 rounded-xl bg-emerald-50 border border-emerald-200">
 
                     <div class="flex items-center justify-between gap-3">
 
@@ -400,7 +375,7 @@
                                 </p>
 
                                 <p id="selectedEquipmentName"
-                                    class="font-black text-slate-800 dark:text-slate-100 text-sm break-words">
+                                    class="font-black text-slate-800 text-sm break-words">
                                     —
                                 </p>
 
@@ -427,7 +402,7 @@
                         <div class="w-full max-w-xs mx-auto md:max-w-none md:mx-0">
 
                             <div
-                                class="aspect-video rounded-xl overflow-hidden bg-slate-200 dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
+                                class="aspect-video rounded-xl overflow-hidden bg-slate-200 border border-slate-200">
 
                                 <img id="equipmentImage" src="" alt="Imagem do equipamento"
                                     class="w-full h-full object-cover hidden">
@@ -517,10 +492,10 @@
         ====================================================== -->
 
         <section
-            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-8">
 
             <div
-                class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                class="px-4 sm:px-6 py-4 sm:py-5 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
                 <div>
 
@@ -540,7 +515,7 @@
 
                 <!-- PROGRESSO -->
                 <div
-                    class="md:w-64 bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+                    class="md:w-64 bg-slate-50 p-3 rounded-xl border border-slate-200">
 
                     <div class="flex justify-between items-center text-xs mb-1.5">
 
@@ -554,7 +529,7 @@
 
                     </div>
 
-                    <div class="h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
 
                         <div id="progressBar" class="h-full bg-ellenco-blue rounded-full transition-all duration-300"
                             style="width:0%">
@@ -568,9 +543,9 @@
 
 
             <!-- LEGENDA -->
-            <div class="px-4 sm:px-6 py-3 bg-slate-50/60 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
+            <div class="px-4 sm:px-6 py-3 bg-slate-50/60 border-b border-slate-200">
 
-                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
 
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
@@ -612,12 +587,12 @@
         ====================================================== -->
 
         <section
-            class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-4 sm:p-6 mb-8">
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 sm:p-6 mb-8">
 
             <div class="flex items-center gap-3 mb-4">
 
                 <div
-                    class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-800 text-amber-600 flex items-center justify-center font-black text-lg">
+                    class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 flex items-center justify-center font-black text-lg">
                     !
                 </div>
 
@@ -637,7 +612,7 @@
 
             <textarea id="observacoes" rows="3"
                 placeholder="Ex.: Pequeno vazamento identificado próximo ao sistema hidráulico..."
-                class="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl resize-none outline-none focus:bg-white dark:focus:bg-slate-700 focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 font-medium"></textarea>
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl resize-none outline-none focus:bg-white focus:border-ellenco-blue focus:ring-4 focus:ring-ellenco-blue/10 text-sm text-slate-800 placeholder:text-slate-400 font-medium"></textarea>
 
         </section>
 
@@ -709,7 +684,7 @@
         <!-- FINALIZAR -->
         <!-- PAINEL DE SUCESSO (aparece após salvar) -->
         <div id="successPanel"
-            class="hidden mb-8 rounded-2xl border-t-4 border-t-emerald-500 border-x border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-5 sm:p-8">
+            class="hidden mb-8 rounded-2xl border-t-4 border-t-emerald-500 border-x border-b border-slate-200 bg-white shadow-sm p-5 sm:p-8">
             <div class="flex items-start gap-4">
                 <div class="w-12 h-12 rounded-full bg-emerald-500 text-white flex items-center justify-center text-2xl font-black shrink-0">✓</div>
                 <div class="min-w-0">
@@ -723,7 +698,7 @@
                     <span>Baixar PDF</span>
                 </button>
                 <button type="button" id="btnPdfAbrir" onclick="baixarPdfInspecao('abrir')"
-                    class="h-12 rounded-xl border-2 border-ellenco-blue text-ellenco-blue font-bold text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition disabled:opacity-60 disabled:cursor-wait">
+                    class="h-12 rounded-xl border-2 border-ellenco-blue text-ellenco-blue font-bold text-sm hover:bg-slate-50 transition disabled:opacity-60 disabled:cursor-wait">
                     Visualizar PDF
                 </button>
                 <button type="button" onclick="novaInspecao()"
@@ -765,7 +740,7 @@
     <div id="perfilModal"
         class="hidden fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
 
-        <div class="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white dark:bg-slate-900 rounded-2xl shadow-2xl">
+        <div class="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto bg-white rounded-2xl shadow-2xl">
 
             <div class="bg-ellenco-blue p-6 text-white">
 
@@ -807,11 +782,11 @@
                             Alterar foto
                             <input id="avatarInput" type="file" accept="image/*" class="hidden">
                         </label>
-                        <button id="avatarRemover" type="button" class="hidden h-9 px-3 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 transition">Remover</button>
+                        <button id="avatarRemover" type="button" class="hidden h-9 px-3 rounded-lg border border-slate-200 text-xs font-bold text-slate-500 hover:bg-slate-50 transition">Remover</button>
                     </div>
                     <p id="avatarMsg" class="text-xs mt-2 min-h-[1rem]"></p>
 
-                    <h3 id="profileName" class="text-xl font-black text-slate-800 dark:text-slate-100 mt-4 text-center break-words">
+                    <h3 id="profileName" class="text-xl font-black text-slate-800 mt-4 text-center break-words">
                         Usuário
                     </h3>
 
@@ -825,13 +800,13 @@
                 <div class="space-y-4">
 
                     <div
-                        class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+                        class="bg-slate-50 border border-slate-200 rounded-xl p-4">
 
                         <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">
                             Nome
                         </p>
 
-                        <p id="profileNameInfo" class="font-bold text-slate-700 dark:text-slate-200 mt-1 break-words">
+                        <p id="profileNameInfo" class="font-bold text-slate-700 mt-1 break-words">
                             —
                         </p>
 
@@ -839,13 +814,13 @@
 
 
                     <div
-                        class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+                        class="bg-slate-50 border border-slate-200 rounded-xl p-4">
 
                         <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">
                             E-mail
                         </p>
 
-                        <p id="profileEmailInfo" class="font-bold text-slate-700 dark:text-slate-200 mt-1 break-all">
+                        <p id="profileEmailInfo" class="font-bold text-slate-700 mt-1 break-all">
                             —
                         </p>
 
@@ -853,13 +828,13 @@
 
 
                     <div
-                        class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-4">
+                        class="bg-slate-50 border border-slate-200 rounded-xl p-4">
 
                         <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">
                             ID do usuário
                         </p>
 
-                        <p id="profileId" class="font-bold text-slate-700 dark:text-slate-200 mt-1 break-all text-xs sm:text-sm">
+                        <p id="profileId" class="font-bold text-slate-700 mt-1 break-all text-xs sm:text-sm">
                             —
                         </p>
 
@@ -1269,7 +1244,7 @@
 
                     <div class="px-4 py-5 text-center">
 
-                        <p class="text-sm font-semibold text-slate-500 dark:text-slate-300">
+                        <p class="text-sm font-semibold text-slate-500">
                             Nenhum equipamento encontrado.
                         </p>
 
@@ -1298,7 +1273,7 @@
                 button.type = "button";
 
                 button.className =
-                    "w-full text-left px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-800 border-b border-slate-100 dark:border-slate-700 last:border-b-0 transition";
+                    "w-full text-left px-4 py-3 hover:bg-slate-50  border-b border-slate-100  last:border-b-0 transition";
 
 
                 const nome =
@@ -1323,7 +1298,7 @@
 
                         <div class="min-w-0">
 
-                            <p class="font-bold text-slate-800 dark:text-slate-100 text-sm truncate">
+                            <p class="font-bold text-slate-800 text-sm truncate">
 
                                 ${escapeHtml(nome)}
 
@@ -1676,7 +1651,7 @@
 
         const HTML_SEM_EQUIPAMENTO = `
                     <div class="text-center py-12 text-slate-400">
-                        <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-xl font-black mb-4">?</div>
+                        <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-xl font-black mb-4">?</div>
                         <p class="text-sm font-semibold text-slate-500">Selecione um equipamento para carregar o checklist.</p>
                         <p class="text-xs mt-1">Os itens exibidos dependem do tipo de equipamento.</p>
                     </div>`;
@@ -1726,7 +1701,7 @@
                 itens = [];
                 checklistContainer.innerHTML = `
                     <div class="text-center py-12">
-                        <div class="w-12 h-12 mx-auto rounded-full bg-red-50 dark:bg-red-950/30 text-ellenco-red flex items-center justify-center text-xl font-black mb-4">!</div>
+                        <div class="w-12 h-12 mx-auto rounded-full bg-red-50 text-ellenco-red flex items-center justify-center text-xl font-black mb-4">!</div>
                         <p class="font-semibold text-ellenco-red">Erro ao carregar os itens de inspeção</p>
                         <p class="text-xs text-slate-400 mt-2">Confira se o SQL do Supabase foi executado.</p>
                         <button type="button" onclick="recarregarItens()" class="mt-4 px-4 py-2 rounded-lg bg-ellenco-blue text-white text-xs font-bold hover:bg-ellenco-blue-dark transition">Tentar novamente</button>
@@ -1835,7 +1810,7 @@
 
 
                 itemDiv.className =
-                    "group border border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 transition-all hover:border-ellenco-blue/40 hover:shadow-sm bg-white dark:bg-slate-800";
+                    "group border border-slate-200  rounded-xl p-3 sm:p-4 transition-all hover:border-ellenco-blue/40 hover:shadow-sm bg-white ";
 
 
                 itemDiv.innerHTML = `
@@ -1844,19 +1819,19 @@
 
                         <div class="flex items-center gap-3 min-w-0">
 
-                            <span class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center text-xs font-bold shrink-0">
+                            <span class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold shrink-0">
 
                                 ${index + 1}
 
                             </span>
 
 
-                            <span class="min-w-0 break-words font-bold text-slate-800 dark:text-slate-100 text-sm">
+                            <span class="min-w-0 break-words font-bold text-slate-800 text-sm">
 
                                 ${escapeHtml(nome)}
 
                                 ${obrigatorio
-                                    ? '<span class="ml-2 align-middle text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-50 dark:bg-red-950/30 text-ellenco-red border border-red-200 dark:border-red-800">Obrigatório</span>'
+                                    ? '<span class="ml-2 align-middle text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-50 text-ellenco-red border border-red-200">Obrigatório</span>'
                                     : ''}
 
                             </span>
@@ -1870,7 +1845,7 @@
                                 type="button"
                                 data-status="ok"
                                 onclick="selecionarStatus(${Number(itemId)}, 'ok')"
-                                class="status-button h-11 sm:h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                class="status-button h-11 sm:h-10 px-4 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
 
                                 <span class="text-emerald-500 font-extrabold">
                                     ✓
@@ -1885,7 +1860,7 @@
                                 type="button"
                                 data-status="problema"
                                 onclick="selecionarStatus(${Number(itemId)}, 'problema')"
-                                class="status-button h-11 sm:h-10 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-200 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                class="status-button h-11 sm:h-10 px-4 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer">
 
                                 <span class="text-ellenco-red font-extrabold">
                                     !
@@ -1901,17 +1876,17 @@
 
                     <div
                         id="observation-${Number(itemId)}"
-                        class="hidden mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
+                        class="hidden mt-3 pt-3 border-t border-slate-100">
 
                         <textarea
                             id="observation-input-${Number(itemId)}"
                             rows="2"
                             placeholder="Descreva o problema identificado..."
-                            class="w-full px-3 py-2 bg-red-50/40 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg text-xs outline-none focus:ring-2 focus:ring-ellenco-red text-slate-800 dark:text-slate-100 resize-none placeholder:text-red-300 font-medium"></textarea>
+                            class="w-full px-3 py-2 bg-red-50/40 border border-red-200 rounded-lg text-xs outline-none focus:ring-2 focus:ring-ellenco-red text-slate-800 resize-none placeholder:text-red-300 font-medium"></textarea>
 
 
                         <div
-                            class="mt-3 rounded-xl border border-dashed border-red-300 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20 p-4">
+                            class="mt-3 rounded-xl border border-dashed border-red-300 bg-red-50/50 p-4">
 
                             <div
                                 class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -1955,7 +1930,7 @@
 
                                     <img
                                         id="photo-img-${Number(itemId)}"
-                                        class="w-full max-h-64 object-cover rounded-lg border border-red-200 dark:border-red-800"
+                                        class="w-full max-h-64 object-cover rounded-lg border border-red-200"
                                         alt="Foto da avaria">
 
                                     <button
@@ -2286,11 +2261,9 @@
 
                 message.classList.add(
                     "bg-red-50",
-                    "dark:bg-red-950/30",
                     "border-red-200",
-                    "dark:border-red-800",
                     "text-red-700",
-                    "dark:text-red-300"
+                    
                 );
 
             }
@@ -2299,11 +2272,9 @@
 
                 message.classList.add(
                     "bg-emerald-50",
-                    "dark:bg-emerald-950/30",
                     "border-emerald-200",
-                    "dark:border-emerald-800",
                     "text-emerald-700",
-                    "dark:text-emerald-300"
+                    
                 );
             }
 
@@ -2627,8 +2598,9 @@
                 }
 
                 let detalhe = error?.message || String(error);
-                if (/horimetro_inicial|horimetro_final/i.test(detalhe)) {
-                    detalhe = "o banco ainda não tem os campos de horímetro inicial/final. Execute o arquivo supabase_update_v4.sql no SQL Editor do Supabase.";
+                if (/horimetro_inicial|horimetro_final|schema cache/i.test(detalhe)) {
+                    const detalheOriginal = detalhe;
+                    detalhe = "o Supabase ainda não reconhece os campos do horímetro. No SQL Editor do Supabase, execute o arquivo supabase_corrigir_v4.sql, aguarde a execução terminar e recarregue esta página. Detalhe técnico: " + detalheOriginal;
                 } else if (/foto_path/i.test(detalhe)) {
                     detalhe = "o banco ainda não tem a coluna das fotos. Execute o arquivo supabase_update_v2.sql no SQL Editor do Supabase.";
                 }

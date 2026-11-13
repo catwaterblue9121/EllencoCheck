@@ -1,0 +1,92 @@
+/* EllencoCheck - estilos compartilhados (tema claro fixo) */
+html {
+    color-scheme: light;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+body { margin: 0; overflow-wrap: break-word; }
+button, select, input, textarea { font-family: inherit; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #e2e8f0; }
+::-webkit-scrollbar-thumb { background: #64748b; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+body,
+header,
+section,
+input,
+textarea,
+button,
+#userMenu,
+#equipamentoResultados,
+#perfilModal {
+    transition:
+        background-color .2s ease,
+        border-color .2s ease,
+        color .2s ease;
+}
+
+.status-button {
+    user-select: none;
+}
+
+/* Botões de status do checklist: estado selecionado.
+   Fica no CSS (com !important) para manter o estado selecionado consistente. */
+button.status-button.status-button[data-selected="ok"] {
+    background-color: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+
+button.status-button.status-button[data-selected="problema"] {
+    background-color: #EE3237 !important;
+    border-color: #EE3237 !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.15);
+}
+
+button.status-button.status-button[data-selected] span {
+    color: #ffffff !important;
+}
+
+/* =====================================================
+   RESPONSIVO (telas pequenas)
+===================================================== */
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    overflow-wrap: break-word;
+}
+
+/* remove o atraso/zoom de toque duplo em botões e links */
+button,
+a,
+label,
+select,
+input[type="checkbox"],
+input[type="radio"] {
+    touch-action: manipulation;
+}
+
+/* usa a altura real da tela no celular (barra do navegador) */
+@supports (height: 100dvh) {
+    body.min-h-screen {
+        min-height: 100dvh;
+    }
+}
+
+@media (max-width: 639px) {
+
+    /* o iPhone dá zoom automático ao focar campos com fonte menor que 16px */
+    input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+}

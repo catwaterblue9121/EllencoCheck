@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <script src="./ellenco-theme.js"></script>
     <script src="./ellenco-guard.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Histórico de Inspeções | EllencoCheck</title>
@@ -17,7 +16,6 @@
 
     <script>
         tailwind.config = {
-            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
@@ -30,7 +28,7 @@
             }
         };
     </script>
-    <link rel="stylesheet" href="./ellenco-theme.css">
+    <link rel="stylesheet" href="./ellenco-base.css">
 </head>
 
 <body class="bg-slate-50 min-h-screen text-slate-900 font-sans antialiased selection:bg-ellenco-blue selection:text-white">
@@ -57,25 +55,15 @@
 
                 <nav class="flex items-center gap-1.5 sm:gap-2 shrink-0">
                     <a href="./index.html"
-                        class="h-10 px-3 sm:px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-ellenco-blue hover:bg-slate-50 inline-flex items-center transition">
+                        class="h-10 px-3 sm:px-4 rounded-xl border border-slate-200  text-sm font-bold text-ellenco-blue hover:bg-slate-50 inline-flex items-center transition">
                         <span class="hidden sm:inline">Nova inspeção</span>
                         <span class="sm:hidden">Nova</span>
                     </a>
                     <a id="navUsuarios" href="./admin.html"
-                        class="hidden h-10 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-bold text-ellenco-blue hover:bg-slate-50 md:inline-flex items-center transition">
+                        class="hidden h-10 px-4 rounded-xl border border-slate-200  text-sm font-bold text-ellenco-blue hover:bg-slate-50 md:inline-flex items-center transition">
                         Painel admin
                     </a>
-                    <button type="button" onclick="alternarTema()" title="Alternar tema"
-                        class="w-10 h-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-600 dark:text-slate-300 flex items-center justify-center transition">
-                        <svg class="w-5 h-5 dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-                        </svg>
-                        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 16a4 4 0 100-8 4 4 0 000 8z" />
-                        </svg>
-                    </button>
-                    <button type="button" onclick="sair()"
+<button type="button" onclick="sair()"
                         class="h-10 px-2 sm:px-4 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition">
                         Sair
                     </button>
@@ -96,7 +84,7 @@
         </div>
 
         <!-- FILTROS -->
-        <section class="bg-white dark:bg-slate-900 rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mb-6">
+        <section class="bg-white  rounded-2xl border-t-4 border-t-ellenco-red border-x border-b border-slate-200  shadow-sm overflow-hidden mb-6">
             <div class="p-4 sm:p-5 grid grid-cols-2 md:grid-cols-12 gap-3 sm:gap-4 items-end">
                 <div class="col-span-2 md:col-span-5">
                     <label for="fBusca" class="block text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">Buscar</label>
@@ -294,7 +282,7 @@
 
             if (!visiveis.length) {
                 lista.innerHTML = `
-                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl py-14 text-center">
+                    <div class="bg-white  border border-slate-200  rounded-2xl py-14 text-center">
                         <p class="font-bold text-slate-600">Nenhuma inspeção encontrada.</p>
                         <p class="text-xs text-slate-400 mt-1">${acabou
                             ? "Ajuste os filtros ou faça uma nova inspeção."
@@ -322,7 +310,7 @@
                 : null;
 
             const card = document.createElement("article");
-            card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col lg:flex-row lg:flex-wrap lg:items-center gap-4 hover:border-ellenco-blue/40 transition";
+            card.className = "bg-white  border border-slate-200  rounded-2xl shadow-sm p-4 sm:p-5 flex flex-col lg:flex-row lg:flex-wrap lg:items-center gap-4 hover:border-ellenco-blue/40 transition";
             card.dataset.id = r.id;
 
             card.innerHTML = `
@@ -374,11 +362,11 @@
             if (card.querySelector("[data-painel-final]")) return;
             const painel = document.createElement("div");
             painel.dataset.painelFinal = "1";
-            painel.className = "w-full flex flex-col sm:flex-row sm:items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-700";
+            painel.className = "w-full flex flex-col sm:flex-row sm:items-center gap-2 pt-3 border-t border-slate-100 ";
             painel.innerHTML = `
                 <label class="text-xs font-bold uppercase text-slate-500 tracking-wider">Horímetro final</label>
                 <input type="number" step="0.1" min="${Number(horIni) || 0}" inputmode="decimal" placeholder="Maior ou igual a ${escapeHtml(fmtHorimetro(horIni))}"
-                    class="h-11 px-3 w-full sm:w-56 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold outline-none focus:border-ellenco-blue">
+                    class="h-11 px-3 w-full sm:w-56 bg-slate-50  border border-slate-200  rounded-xl text-sm font-bold outline-none focus:border-ellenco-blue">
                 <button type="button" data-salvar class="h-11 px-5 rounded-xl bg-ellenco-blue text-white text-sm font-bold hover:opacity-90 transition disabled:opacity-60">Salvar</button>
                 <button type="button" data-cancelar class="h-11 px-4 rounded-xl border border-slate-200 text-slate-500 text-sm font-bold">Cancelar</button>`;
             card.appendChild(painel);
@@ -411,7 +399,7 @@
                     console.error("Erro ao registrar horímetro final:", e);
                     let det = e.message || String(e);
                     if (/registrar_horimetro_final/i.test(det)) {
-                        det = "o banco ainda não tem essa função. Execute o arquivo supabase_update_v4.sql no SQL Editor do Supabase.";
+                        det = "o banco ainda não tem a função necessária. Execute supabase_corrigir_v4.sql no SQL Editor do Supabase e recarregue a página.";
                     }
                     mostrarMensagem(`Não foi possível registrar o horímetro final: ${det}`);
                     window.scrollTo({ top: 0, behavior: "smooth" });

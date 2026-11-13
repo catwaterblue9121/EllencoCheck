@@ -23,7 +23,6 @@
     css.textContent =
         "html.auth-pending body{visibility:hidden!important}" +
         "html.auth-pending{background:#f1f5f9}" +
-        "html.dark.auth-pending{background:#0c0c0d}" +
         "html.auth-pending::after{content:'';position:fixed;top:50%;left:50%;width:32px;height:32px;margin:-16px 0 0 -16px;" +
         "border:3px solid rgba(128,128,128,.35);border-top-color:#EE3237;border-radius:50%;" +
         "animation:ellencoSpin .8s linear infinite;visibility:visible}" +

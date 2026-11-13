@@ -19,6 +19,59 @@ alter table public.checklists add column if not exists horimetro_inicial numeric
 alter table public.checklists add column if not exists horimetro_final numeric(10,2);
 alter table public.checklists add column if not exists horimetro_final_em timestamptz;
 
+-- Corrige o gatilho antigo que exigia horímetro inicial E final ao mesmo tempo.
+-- O horímetro final pode ficar vazio na abertura da inspeção e ser informado depois
+-- pelo Histórico, quando o equipamento encerrar o uso.
+create or replace function public.definir_horimetro_checklist()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+declare
+    v_horimetro_inicial numeric;
+begin
+    -- Compatibilidade: versões antigas enviavam somente a coluna `horimetro`.
+    if tg_op = 'UPDATE' then
+        v_horimetro_inicial := coalesce(
+            new.horimetro_inicial,
+            new.horimetro,
+            old.horimetro_inicial,
+            old.horimetro
+        );
+    else
+        v_horimetro_inicial := coalesce(new.horimetro_inicial, new.horimetro);
+    end if;
+
+    -- Na criação de uma inspeção, a leitura inicial é obrigatória.
+    -- Em atualizações de registros antigos, não bloqueia mudanças por falta de leitura.
+    if v_horimetro_inicial is null and tg_op = 'INSERT' then
+        raise exception 'Informe o horímetro inicial.';
+    end if;
+
+    if v_horimetro_inicial is not null and v_horimetro_inicial < 0 then
+        raise exception 'O horímetro inicial não pode ser negativo.';
+    end if;
+
+    if v_horimetro_inicial is not null then
+        new.horimetro_inicial := v_horimetro_inicial;
+        -- Mantém a coluna antiga para compatibilidade com telas/relatórios anteriores.
+        new.horimetro := v_horimetro_inicial;
+    end if;
+
+    -- A leitura final é opcional ao salvar. Quando informada, valida a sequência.
+    if new.horimetro_final is not null then
+        if new.horimetro_inicial is null then
+            raise exception 'Informe o horímetro inicial antes do horímetro final.';
+        end if;
+        if new.horimetro_final < new.horimetro_inicial then
+            raise exception 'O horímetro final não pode ser menor que o inicial.';
+        end if;
+    end if;
+
+    return new;
+end;
+$$;
+
 update public.checklists
    set horimetro_inicial = horimetro
  where horimetro_inicial is null;
@@ -103,3 +156,7 @@ for each row execute procedure public.sincronizar_horimetro_equipamento();
 --    where t.nome in ('Caminhão Basculante','Caminhão Pipa','Caminhão Comboio')
 --      and not exists (select 1 from public.itens_inspecao x
 --                       where x.tipo_id = t.id and x.nome = 'Nível de óleo do motor');
+
+
+-- Atualiza o cache de esquema da API REST do Supabase após criar as colunas.
+notify pgrst, 'reload schema';

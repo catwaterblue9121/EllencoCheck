@@ -20,9 +20,11 @@ Acesse o painel do Supabase e crie um projeto.
 
 **SQL Editor → New query**
 
+**Correção do erro “o banco precisa do v4”:** no banco já existente, execute `supabase_corrigir_v4.sql` no SQL Editor. Esse arquivo garante as colunas do horímetro inicial/final, a função usada pelo Histórico, a sincronização do horímetro do equipamento e solicita a recarga do cache da API. Veja `INSTRUCOES_ATUALIZACAO.txt` para os passos e consultas de conferência.
+
 - **Instalação nova:** execute todo o `supabase_schema.sql`, depois o `supabase_update_v3.sql` (checklist da empresa: tipos, itens e EPIs, campo prefixo) depois o `supabase_update_v4.sql` (horímetro inicial/final e itens obrigatórios) e por fim o `supabase_update_v5.sql` (painel admin e foto de perfil).
 - **Banco que já estava em uso (versão anterior):** execute, em ordem, `supabase_update_v2.sql`, `v3`, `v4` e `v5`.
-  Ele é seguro para rodar mais de uma vez e **não altera seus dados**.
+  As atualizações são cumulativas. Se a tela ainda informar que faltam campos do horímetro, execute também `supabase_corrigir_v4.sql` (reparo idempotente) e recarregue o site. As migrações não apagam seus dados.
 
 > Não rode o `supabase_schema.sql` novamente num banco em uso: os dados iniciais (equipamentos/itens de ID 1 a 7) seriam sobrescritos.
 
@@ -69,11 +71,12 @@ docker run -p 8080:80 ellencocheck
 | `usuarios.html` | Administração de usuários (somente admin) |
 | `forgot-password.html` / `reset-password.html` | Recuperação de senha |
 | `pdf-checklist.js` | Gerador do PDF (jsPDF + AutoTable via CDN) |
-| `ellenco-theme.css` | Estilos compartilhados (modo escuro) |
+| `ellenco-base.css` | Estilos compartilhados, tema claro fixo |
 | `supabase-config.js` | URL e chave do Supabase |
 | `supabase_schema.sql` | Banco completo (instalação nova) |
 | `supabase_update_v2.sql` | Atualização para quem já usa o sistema |
 | `supabase_update_v4.sql` | Horímetro inicial/final e itens obrigatórios |
+| `supabase_corrigir_v4.sql` | Reparo seguro dos campos/função do horímetro e recarga do cache do Supabase |
 
 ## Como o PDF é gerado
 
@@ -84,6 +87,10 @@ Para ajustar o visual (cores, textos, logotipo), edite as constantes `COR` e as 
 ## Observações sobre usuários
 
 O Supabase Auth guarda as senhas; a tabela `profiles` guarda nome, status e função. Em `usuarios.html`, o administrador cria contas com `auth.signUp()` usando um cliente separado, então **a sessão do administrador não é trocada**. Se a confirmação de e-mail estiver ativa, o novo usuário precisa confirmar o endereço.
+
+## Aparência
+
+- O modo escuro e o botão de alternância foram removidos. Todas as telas permanecem no tema claro, independentemente da preferência do dispositivo.
 
 ## Versão 2.3
 
@@ -110,7 +117,7 @@ O Supabase Auth guarda as senhas; a tabela `profiles` guarda nome, status e fun�
 - Horímetro vazio era salvo como 0; agora é obrigatório.
 - Foto anexada a um item que depois virava "OK" ainda era enviada; agora só vale para itens com problema.
 - A numeração dos itens exibia o ID do banco; agora é sequencial (igual ao PDF), e as mensagens de validação citam o nome do item.
-- Cores da marca unificadas com as demais telas (`#113A6E` e `#EE3237`); CSS movido para `ellenco-theme.css`.
+- Cores da marca unificadas com as demais telas (`#113A6E` e `#EE3237`); CSS compartilhado mantido em `ellenco-base.css`.
 - Links para Histórico e (admin) Usuários — a tela de usuários não tinha nenhum link de acesso.
 
 **`usuarios.html`**
